@@ -1,0 +1,8 @@
+date: '2025-10-20'
+players:
+  - Alice Johnson
+  - Bob Smith
+score:
+  player1_games: 11
+  player2_games: 7
+winner: Alice Johnson

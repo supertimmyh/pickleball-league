@@ -1,0 +1,15 @@
+date: '2025-10-22'
+team1:
+- Bob Smith
+- Dave Brown
+team2:
+- Eve Martinez
+- Alice Johnson
+games:
+- team1_score: 11
+  team2_score: 2
+- team1_score: 11
+  team2_score: 9
+- team1_score: 11
+  team2_score: 10
+winner_team: 1

@@ -1,0 +1,15 @@
+date: '2025-10-22'
+team1:
+- Alice Johnson
+- Bob Smith
+team2:
+- Eve Martinez
+- Frank Chen
+games:
+- team1_score: 11
+  team2_score: 1
+- team1_score: 11
+  team2_score: 7
+- team1_score: 11
+  team2_score: 10
+winner_team: 1

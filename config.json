@@ -1,0 +1,16 @@
+{
+  "league_name": "Pickleball League",
+  "league_description": "Competitive Pickleball League",
+  "ranking_methods": [
+    "ELO Rating System",
+    "Points Difference",
+    "Win/Loss Record"
+  ],
+  "colors": {
+    "primary": "#082946",
+    "accent": "#e0672b"
+  },
+  "logo_path": "/static/logo-placeholder.png",
+  "elo_k_factor": 32,
+  "default_rating": 1200
+}

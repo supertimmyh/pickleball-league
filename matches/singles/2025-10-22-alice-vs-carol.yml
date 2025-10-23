@@ -1,0 +1,8 @@
+date: '2025-10-22'
+players:
+  - Alice Johnson
+  - Carol White
+score:
+  player1_games: 9
+  player2_games: 11
+winner: Carol White

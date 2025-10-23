@@ -1,0 +1,11 @@
+date: '2025-10-20'
+team1:
+  - Alice Johnson
+  - Bob Smith
+team2:
+  - Carol White
+  - Dave Brown
+score:
+  team1_games: 11
+  team2_games: 8
+winner_team: 1

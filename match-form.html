@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Match - Pickleball League</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #082946 0%, #0a3a5c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+            border: 2px dashed #ddd;
+        }
+
+        h1 {
+            color: #082946;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .match-type-toggle {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .match-type-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #082946;
+        }
+
+        .match-type-btn.active {
+            background: #082946;
+            color: white;
+            border-color: #082946;
+        }
+
+        .match-type-btn:hover {
+            border-color: #e0672b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #082946;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            background: white;
+        }
+
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #e0672b;
+        }
+
+        .players-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .team-section {
+            margin-bottom: 20px;
+        }
+
+        .team-title {
+            font-weight: 600;
+            color: #e0672b;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .player-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .games-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .games-title {
+            font-weight: 600;
+            color: #082946;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .game-row {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .game-label {
+            font-weight: 600;
+            color: #666;
+            min-width: 70px;
+        }
+
+        .score-input {
+            position: relative;
+        }
+
+        .score-input input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .score-input input:focus {
+            outline: none;
+            border-color: #e0672b;
+        }
+
+        .score-input input::placeholder {
+            color: #ccc;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .score-header {
+            font-weight: 700;
+            color: #082946;
+            text-align: center;
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .game-header {
+            border-bottom: 2px solid #e0672b;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: #082946;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #0a3a5c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(8, 41, 70, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .btn-back:hover {
+            opacity: 1;
+            color: #e0672b;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px;
+            }
+
+            .game-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .game-label {
+                min-width: auto;
+            }
+
+            .player-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="btn-back">← Back to Rankings</a>
+
+        <div class="header">
+            <div class="logo-placeholder">[LOGO]</div>
+            <h1>Record Match</h1>
+            <p class="subtitle">Enter match details below</p>
+        </div>
+
+        <div class="match-type-toggle">
+            <button type="button" class="match-type-btn" data-type="singles">Singles Match</button>
+            <button type="button" class="match-type-btn active" data-type="doubles">Doubles Match</button>
+        </div>
+
+        <form id="matchForm">
+            <div class="form-group">
+                <label for="matchDate">Match Date</label>
+                <input type="date" id="matchDate" required>
+            </div>
+
+            <!-- Singles Section -->
+            <div id="singlesSection" class="players-section hidden">
+                <div class="form-group">
+                    <label for="player1">Player 1</label>
+                    <select id="player1">
+                        <option value="">Select Player 1</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="player2">Player 2</label>
+                    <select id="player2">
+                        <option value="">Select Player 2</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Doubles Section -->
+            <div id="doublesSection" class="players-section">
+                <div class="team-section">
+                    <div class="team-title">Team 1</div>
+                    <div class="player-row">
+                        <div class="form-group">
+                            <label for="team1Player1">Player 1</label>
+                            <select id="team1Player1">
+                                <option value="">Select Player</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="team1Player2">Player 2</label>
+                            <select id="team1Player2">
+                                <option value="">Select Player</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-section">
+                    <div class="team-title">Team 2</div>
+                    <div class="player-row">
+                        <div class="form-group">
+                            <label for="team2Player1">Player 1</label>
+                            <select id="team2Player1">
+                                <option value="">Select Player</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="team2Player2">Player 2</label>
+                            <select id="team2Player2">
+                                <option value="">Select Player</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Section (Singles) -->
+            <div id="singlesGames" class="games-section hidden">
+                <div class="games-title">Game Scores (Best of 3)</div>
+                <div class="game-row game-header">
+                    <div class="game-label"></div>
+                    <div class="score-header" id="s_p1_header">Player 1</div>
+                    <div class="score-header" id="s_p2_header">Player 2</div>
+                </div>
+                <div class="game-row">
+                    <div class="game-label">Game 1:</div>
+                    <div class="score-input">
+                        <input type="number" id="s_game1_p1" min="0" max="99" placeholder="0">
+                    </div>
+                    <div class="score-input">
+                        <input type="number" id="s_game1_p2" min="0" max="99" placeholder="0">
+                    </div>
+                </div>
+                <div class="game-row">
+                    <div class="game-label">Game 2:</div>
+                    <div class="score-input">
+                        <input type="number" id="s_game2_p1" min="0" max="99" placeholder="0">
+                    </div>
+                    <div class="score-input">
+                        <input type="number" id="s_game2_p2" min="0" max="99" placeholder="0">
+                    </div>
+                </div>
+                <div class="game-row">
+                    <div class="game-label">Game 3:</div>
+                    <div class="score-input">
+                        <input type="number" id="s_game3_p1" min="0" max="99" placeholder="0">
+                    </div>
+                    <div class="score-input">
+                        <input type="number" id="s_game3_p2" min="0" max="99" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Section (Doubles) -->
+            <div id="doublesGames" class="games-section">
+                <div class="games-title">Game Scores (Best of 3)</div>
+                <div class="game-row game-header">
+                    <div class="game-label"></div>
+                    <div class="score-header">Team 1</div>
+                    <div class="score-header">Team 2</div>
+                </div>
+                <div class="game-row">
+                    <div class="game-label">Game 1:</div>
+                    <div class="score-input">
+                        <input type="number" id="d_game1_t1" min="0" max="99" placeholder="0">
+                    </div>
+                    <div class="score-input">
+                        <input type="number" id="d_game1_t2" min="0" max="99" placeholder="0">
+                    </div>
+                </div>
+                <div class="game-row">
+                    <div class="game-label">Game 2:</div>
+                    <div class="score-input">
+                        <input type="number" id="d_game2_t1" min="0" max="99" placeholder="0">
+                    </div>
+                    <div class="score-input">
+                        <input type="number" id="d_game2_t2" min="0" max="99" placeholder="0">
+                    </div>
+                </div>
+                <div class="game-row">
+                    <div class="game-label">Game 3:</div>
+                    <div class="score-input">
+                        <input type="number" id="d_game3_t1" min="0" max="99" placeholder="0">
+                    </div>
+                    <div class="score-input">
+                        <input type="number" id="d_game3_t2" min="0" max="99" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Match</button>
+        </form>
+
+        <div id="messageArea"></div>
+    </div>
+
+    <script>
+        // Configuration
+        let players = [];
+        let currentMatchType = 'doubles';
+
+        // Set today's date as default
+        document.getElementById('matchDate').valueAsDate = new Date();
+
+        // Load players from server
+        async function loadPlayers() {
+            try {
+                const response = await fetch('/api/players');
+                players = await response.json();
+                populatePlayerDropdowns();
+            } catch (error) {
+                console.error('Error loading players:', error);
+                showMessage('Error loading player list', 'error');
+            }
+        }
+
+        // Populate all player dropdowns
+        function populatePlayerDropdowns() {
+            const selects = [
+                'player1', 'player2',
+                'team1Player1', 'team1Player2',
+                'team2Player1', 'team2Player2'
+            ];
+
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+
+                // Clear existing options except first
+                select.innerHTML = '<option value="">Select Player</option>';
+
+                // Add player options
+                players.forEach(player => {
+                    const option = document.createElement('option');
+                    option.value = player;
+                    option.textContent = player;
+                    select.appendChild(option);
+                });
+
+                // Restore previous selection if exists
+                if (currentValue) {
+                    select.value = currentValue;
+                }
+            });
+        }
+
+        // Update player headers in game scores
+        function updatePlayerLabels() {
+            const p1 = document.getElementById('player1').value;
+            const p2 = document.getElementById('player2').value;
+
+            if (p1) document.getElementById('s_p1_header').textContent = p1;
+            else document.getElementById('s_p1_header').textContent = 'Player 1';
+
+            if (p2) document.getElementById('s_p2_header').textContent = p2;
+            else document.getElementById('s_p2_header').textContent = 'Player 2';
+        }
+
+        // Listen to player selection changes
+        document.getElementById('player1').addEventListener('change', updatePlayerLabels);
+        document.getElementById('player2').addEventListener('change', updatePlayerLabels);
+
+        // Match type toggle
+        const matchTypeBtns = document.querySelectorAll('.match-type-btn');
+        const singlesSection = document.getElementById('singlesSection');
+        const doublesSection = document.getElementById('doublesSection');
+        const singlesGames = document.getElementById('singlesGames');
+        const doublesGames = document.getElementById('doublesGames');
+
+        matchTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                matchTypeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMatchType = btn.dataset.type;
+
+                if (currentMatchType === 'singles') {
+                    singlesSection.classList.remove('hidden');
+                    doublesSection.classList.add('hidden');
+                    singlesGames.classList.remove('hidden');
+                    doublesGames.classList.add('hidden');
+                } else {
+                    singlesSection.classList.add('hidden');
+                    doublesSection.classList.remove('hidden');
+                    singlesGames.classList.add('hidden');
+                    doublesGames.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Helper to get game scores and determine winner
+        function processGames(scores) {
+            // Filter out blank games
+            const games = scores.filter(game => {
+                return game.p1 !== '' && game.p2 !== '' &&
+                       !isNaN(game.p1) && !isNaN(game.p2);
+            });
+
+            if (games.length === 0) {
+                return null;
+            }
+
+            // Count wins
+            let p1Wins = 0;
+            let p2Wins = 0;
+
+            games.forEach(game => {
+                if (parseInt(game.p1) > parseInt(game.p2)) {
+                    p1Wins++;
+                } else if (parseInt(game.p2) > parseInt(game.p1)) {
+                    p2Wins++;
+                }
+            });
+
+            return {
+                games: games,
+                p1Wins: p1Wins,
+                p2Wins: p2Wins,
+                winner: p1Wins > p2Wins ? 1 : 2
+            };
+        }
+
+        // Form submission
+        document.getElementById('matchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const matchDate = document.getElementById('matchDate').value;
+            const messageArea = document.getElementById('messageArea');
+
+            let matchData = {
+                date: matchDate,
+                type: currentMatchType
+            };
+
+            if (currentMatchType === 'singles') {
+                const player1 = document.getElementById('player1').value;
+                const player2 = document.getElementById('player2').value;
+
+                if (!player1 || !player2) {
+                    showMessage('Please select both players', 'error');
+                    return;
+                }
+
+                if (player1 === player2) {
+                    showMessage('Please select different players', 'error');
+                    return;
+                }
+
+                // Get game scores
+                const scores = [
+                    { p1: document.getElementById('s_game1_p1').value, p2: document.getElementById('s_game1_p2').value },
+                    { p1: document.getElementById('s_game2_p1').value, p2: document.getElementById('s_game2_p2').value },
+                    { p1: document.getElementById('s_game3_p1').value, p2: document.getElementById('s_game3_p2').value }
+                ];
+
+                const result = processGames(scores);
+                if (!result) {
+                    showMessage('Please enter at least one game score', 'error');
+                    return;
+                }
+
+                matchData.players = [player1, player2];
+                matchData.games = result.games.map(g => ({
+                    player1_score: parseInt(g.p1),
+                    player2_score: parseInt(g.p2)
+                }));
+                matchData.winner = result.winner === 1 ? player1 : player2;
+
+            } else {
+                // Doubles
+                const team1p1 = document.getElementById('team1Player1').value;
+                const team1p2 = document.getElementById('team1Player2').value;
+                const team2p1 = document.getElementById('team2Player1').value;
+                const team2p2 = document.getElementById('team2Player2').value;
+
+                if (!team1p1 || !team1p2 || !team2p1 || !team2p2) {
+                    showMessage('Please select all players', 'error');
+                    return;
+                }
+
+                // Check for duplicate players
+                const allPlayers = [team1p1, team1p2, team2p1, team2p2];
+                const uniquePlayers = new Set(allPlayers);
+                if (uniquePlayers.size !== 4) {
+                    showMessage('Each player can only be selected once', 'error');
+                    return;
+                }
+
+                // Get game scores
+                const scores = [
+                    { p1: document.getElementById('d_game1_t1').value, p2: document.getElementById('d_game1_t2').value },
+                    { p1: document.getElementById('d_game2_t1').value, p2: document.getElementById('d_game2_t2').value },
+                    { p1: document.getElementById('d_game3_t1').value, p2: document.getElementById('d_game3_t2').value }
+                ];
+
+                const result = processGames(scores);
+                if (!result) {
+                    showMessage('Please enter at least one game score', 'error');
+                    return;
+                }
+
+                matchData.team1 = [team1p1, team1p2];
+                matchData.team2 = [team2p1, team2p2];
+                matchData.games = result.games.map(g => ({
+                    team1_score: parseInt(g.p1),
+                    team2_score: parseInt(g.p2)
+                }));
+                matchData.winner_team = result.winner;
+            }
+
+            // Submit to server
+            try {
+                const response = await fetch('/api/matches', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(matchData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(data.message || 'Match recorded successfully!', 'success');
+
+                    // Reset form
+                    document.getElementById('matchForm').reset();
+                    document.getElementById('matchDate').valueAsDate = new Date();
+
+                    // Redirect to rankings after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    showMessage(data.error || 'Error recording match', 'error');
+                }
+            } catch (error) {
+                showMessage('Error submitting match: ' + error.message, 'error');
+            }
+        });
+
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
+            messageArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Load players on page load
+        loadPlayers();
+    </script>
+</body>
+</html>

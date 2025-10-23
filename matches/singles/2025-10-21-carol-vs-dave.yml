@@ -1,0 +1,8 @@
+date: '2025-10-21'
+players:
+  - Carol White
+  - Dave Brown
+score:
+  player1_games: 11
+  player2_games: 9
+winner: Carol White

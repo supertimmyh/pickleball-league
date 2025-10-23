@@ -1,0 +1,196 @@
+{
+  "generated_at": "2025-10-22T18:51:15.703093",
+  "singles": [
+    {
+      "player": "Carol White",
+      "rating": 1232.0,
+      "wins": 2,
+      "losses": 0,
+      "win_pct": 100.0,
+      "games_won": 22,
+      "games_lost": 18,
+      "matches_played": 2,
+      "rank": 1
+    },
+    {
+      "player": "Alice Johnson",
+      "rating": 1200.0,
+      "wins": 1,
+      "losses": 1,
+      "win_pct": 50.0,
+      "games_won": 20,
+      "games_lost": 18,
+      "matches_played": 2,
+      "rank": 2
+    },
+    {
+      "player": "Bob Smith",
+      "rating": 1184.0,
+      "wins": 0,
+      "losses": 1,
+      "win_pct": 0.0,
+      "games_won": 7,
+      "games_lost": 11,
+      "matches_played": 1,
+      "rank": 3
+    },
+    {
+      "player": "Dave Brown",
+      "rating": 1184.0,
+      "wins": 0,
+      "losses": 1,
+      "win_pct": 0.0,
+      "games_won": 9,
+      "games_lost": 11,
+      "matches_played": 1,
+      "rank": 4
+    }
+  ],
+  "doubles_teams": [
+    {
+      "team": "Alice Johnson & Bob Smith",
+      "rating": 1245.1,
+      "wins": 3,
+      "losses": 0,
+      "win_pct": 100.0,
+      "games_won": 77,
+      "games_lost": 41,
+      "matches_played": 3,
+      "rank": 1
+    },
+    {
+      "team": "Bob Smith & Carol White",
+      "rating": 1216.0,
+      "wins": 1,
+      "losses": 0,
+      "win_pct": 100.0,
+      "games_won": 11,
+      "games_lost": 9,
+      "matches_played": 1,
+      "rank": 2
+    },
+    {
+      "team": "Bob Smith & Dave Brown",
+      "rating": 1216.0,
+      "wins": 1,
+      "losses": 0,
+      "win_pct": 100.0,
+      "games_won": 33,
+      "games_lost": 21,
+      "matches_played": 1,
+      "rank": 3
+    },
+    {
+      "team": "Eve Martinez & Frank Chen",
+      "rating": 1184.7,
+      "wins": 0,
+      "losses": 1,
+      "win_pct": 0.0,
+      "games_won": 18,
+      "games_lost": 33,
+      "matches_played": 1,
+      "rank": 4
+    },
+    {
+      "team": "Alice Johnson & Dave Brown",
+      "rating": 1184.0,
+      "wins": 0,
+      "losses": 1,
+      "win_pct": 0.0,
+      "games_won": 9,
+      "games_lost": 11,
+      "matches_played": 1,
+      "rank": 5
+    },
+    {
+      "team": "Alice Johnson & Eve Martinez",
+      "rating": 1184.0,
+      "wins": 0,
+      "losses": 1,
+      "win_pct": 0.0,
+      "games_won": 21,
+      "games_lost": 33,
+      "matches_played": 1,
+      "rank": 6
+    },
+    {
+      "team": "Carol White & Dave Brown",
+      "rating": 1170.2,
+      "wins": 0,
+      "losses": 2,
+      "win_pct": 0.0,
+      "games_won": 23,
+      "games_lost": 44,
+      "matches_played": 2,
+      "rank": 7
+    }
+  ],
+  "doubles_individual": [
+    {
+      "player": "Bob Smith",
+      "rating": 1277.1,
+      "wins": 5,
+      "losses": 0,
+      "win_pct": 100.0,
+      "games_won": 121,
+      "games_lost": 71,
+      "matches_played": 5,
+      "rank": 1
+    },
+    {
+      "player": "Alice Johnson",
+      "rating": 1213.1,
+      "wins": 3,
+      "losses": 2,
+      "win_pct": 60.0,
+      "games_won": 107,
+      "games_lost": 85,
+      "matches_played": 5,
+      "rank": 2
+    },
+    {
+      "player": "Carol White",
+      "rating": 1185.8,
+      "wins": 1,
+      "losses": 2,
+      "win_pct": 33.3,
+      "games_won": 34,
+      "games_lost": 53,
+      "matches_played": 3,
+      "rank": 3
+    },
+    {
+      "player": "Frank Chen",
+      "rating": 1185.1,
+      "wins": 0,
+      "losses": 1,
+      "win_pct": 0.0,
+      "games_won": 18,
+      "games_lost": 33,
+      "matches_played": 1,
+      "rank": 4
+    },
+    {
+      "player": "Dave Brown",
+      "rating": 1169.8,
+      "wins": 1,
+      "losses": 3,
+      "win_pct": 25.0,
+      "games_won": 65,
+      "games_lost": 76,
+      "matches_played": 4,
+      "rank": 5
+    },
+    {
+      "player": "Eve Martinez",
+      "rating": 1169.1,
+      "wins": 0,
+      "losses": 2,
+      "win_pct": 0.0,
+      "games_won": 39,
+      "games_lost": 66,
+      "matches_played": 2,
+      "rank": 6
+    }
+  ]
+}

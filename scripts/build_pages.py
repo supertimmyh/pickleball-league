@@ -3,27 +3,70 @@
 Pickleball League HTML Page Generator
 
 Reads rankings.json and config.json to generate a beautiful HTML page displaying the rankings.
+Supports both local filesystem and Google Cloud Storage backends.
 """
 
+import os
 import json
 from pathlib import Path
 from datetime import datetime
 
+# Google Cloud Storage imports
+try:
+    from google.cloud import storage
+    GCS_AVAILABLE = True
+except ImportError:
+    GCS_AVAILABLE = False
 
-def load_config(base_dir):
-    """Load configuration file."""
+
+def read_file_from_gcs(storage_client, bucket_name, file_path):
+    """Read a file from Google Cloud Storage."""
+    try:
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(file_path)
+        return blob.download_as_string()
+    except Exception as e:
+        print(f"Error reading {file_path} from GCS: {e}")
+        return None
+
+
+def write_file_to_gcs(storage_client, bucket_name, file_path, content):
+    """Write a file to Google Cloud Storage."""
+    try:
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(file_path)
+        if isinstance(content, str):
+            blob.upload_from_string(content)
+        else:
+            blob.upload_from_string(content)
+        print(f"✓ Saved to GCS: gs://{bucket_name}/{file_path}")
+        return True
+    except Exception as e:
+        print(f"Error writing {file_path} to GCS: {e}")
+        return False
+
+
+def load_config(base_dir, use_gcs=False, storage_client=None, gcs_config_bucket=None):
+    """Load configuration file (local or GCS)."""
+    if use_gcs and storage_client:
+        config_data = read_file_from_gcs(storage_client, gcs_config_bucket, 'config.json')
+        if config_data:
+            config_text = config_data.decode('utf-8') if isinstance(config_data, bytes) else config_data
+            return json.loads(config_text)
+
+    # Try local file
     config_path = base_dir / "config.json"
     if config_path.exists():
         with open(config_path, 'r') as f:
             return json.load(f)
-    else:
-        # Default config
-        return {
-            "league_name": "Pickleball League",
-            "league_description": "Competitive Pickleball League",
-            "ranking_methods": ["ELO Rating System", "Points Difference", "Win/Loss Record"],
-            "colors": {"primary": "#082946", "accent": "#e0672b"}
-        }
+
+    # Default config
+    return {
+        "league_name": "Pickleball League",
+        "league_description": "Competitive Pickleball League",
+        "ranking_methods": ["ELO Rating System", "Points Difference", "Win/Loss Record"],
+        "colors": {"primary": "#082946", "accent": "#e0672b"}
+    }
 
 
 def generate_rankings_table(rankings, table_type='singles'):
@@ -85,7 +128,7 @@ def generate_rankings_table(rankings, table_type='singles'):
     return html
 
 
-def generate_index_page(rankings_data, config, output_path):
+def generate_index_page(rankings_data, config, output_path, use_gcs=False, storage_client=None, gcs_config_bucket=None):
     """Generate the main index.html page."""
 
     generated_time = datetime.fromisoformat(rankings_data['generated_at']).strftime('%B %d, %Y at %I:%M %p')
@@ -439,10 +482,12 @@ def generate_index_page(rankings_data, config, output_path):
 </html>
 '''
 
-    with open(output_path, 'w') as f:
-        f.write(html)
-
-    print(f"✓ Generated: {output_path}")
+    if use_gcs and storage_client:
+        write_file_to_gcs(storage_client, gcs_config_bucket, 'index.html', html)
+    else:
+        with open(output_path, 'w') as f:
+            f.write(html)
+        print(f"✓ Generated: {output_path}")
 
 
 def main():
@@ -454,26 +499,51 @@ def main():
     else:
         base_dir = Path(__file__).parent.parent
 
+    # Check if using GCS
+    use_gcs = os.getenv('USE_GCS', 'false').lower() == 'true'
+    gcs_project = os.getenv('GOOGLE_CLOUD_PROJECT')
+    gcs_config_bucket = os.getenv('GCS_CONFIG_BUCKET', 'pickleball-config-data')
+
+    storage_client = None
+    if use_gcs and GCS_AVAILABLE:
+        try:
+            storage_client = storage.Client(project=gcs_project)
+            print(f"Connected to GCS project: {gcs_project}\n")
+        except Exception as e:
+            print(f"Warning: Could not connect to GCS: {e}")
+            use_gcs = False
+
     # Load config
-    config = load_config(base_dir)
+    config = load_config(base_dir, use_gcs, storage_client, gcs_config_bucket)
 
     # Load rankings data
-    rankings_file = base_dir / "rankings.json"
-
-    if not rankings_file.exists():
-        print(f"Error: Rankings file not found at {rankings_file}")
-        print("Please run generate_rankings.py first.")
-        return
-
-    with open(rankings_file, 'r') as f:
-        rankings_data = json.load(f)
+    if use_gcs and storage_client:
+        rankings_data_bytes = read_file_from_gcs(storage_client, gcs_config_bucket, 'rankings.json')
+        if not rankings_data_bytes:
+            print("Error: Rankings file not found in Cloud Storage")
+            print("Please run generate_rankings.py first.")
+            return
+        rankings_text = rankings_data_bytes.decode('utf-8') if isinstance(rankings_data_bytes, bytes) else rankings_data_bytes
+        rankings_data = json.loads(rankings_text)
+    else:
+        rankings_file = base_dir / "rankings.json"
+        if not rankings_file.exists():
+            print(f"Error: Rankings file not found at {rankings_file}")
+            print("Please run generate_rankings.py first.")
+            return
+        with open(rankings_file, 'r') as f:
+            rankings_data = json.load(f)
 
     # Generate index.html
     output_path = base_dir / "index.html"
-    generate_index_page(rankings_data, config, output_path)
+    generate_index_page(rankings_data, config, output_path, use_gcs, storage_client, gcs_config_bucket)
 
-    print(f"\n✓ HTML pages generated successfully!")
-    print(f"  Open {output_path} in your browser to view rankings.")
+    if use_gcs:
+        print(f"\n✓ HTML pages generated successfully!")
+        print(f"  Saved to gs://{gcs_config_bucket}/index.html")
+    else:
+        print(f"\n✓ HTML pages generated successfully!")
+        print(f"  Open {output_path} in your browser to view rankings.")
 
 
 if __name__ == "__main__":

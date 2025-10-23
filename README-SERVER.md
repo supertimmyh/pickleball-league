@@ -11,6 +11,20 @@ Complete pickleball league management system with automated match submission and
 - **Beautiful UI**: Custom theme with your league colors
 - **No Database Required**: Still uses YAML files (easy migration to Phase 2)
 
+## Deployment Options
+
+### Local Setup (Default)
+This guide covers the local setup - perfect for private league use on your computer or local network.
+
+### Cloud Deployment (Optional)
+If you want to deploy to Google Cloud Run with Cloud Storage:
+- See [CLOUD_RUN_DEPLOYMENT.md](./CLOUD_RUN_DEPLOYMENT.md) for step-by-step instructions
+- All features work the same, just hosted in the cloud
+- Accessible from anywhere, not just your local network
+- Estimated cost: < $5/month
+
+The application supports both modes - you can switch between local and cloud by setting the `USE_GCS` environment variable.
+
 ## Quick Start
 
 ### 1. Install Dependencies
@@ -70,15 +84,15 @@ Pickleball League Server
 ====================================
 ...
 Open in your browser:
-  Rankings: http://localhost:5000/
-  Record Match: http://localhost:5000/record
+  Rankings: http://localhost:8000/
+  Record Match: http://localhost:8000/record
 ====================================
 ```
 
 ### 5. Use the System
 
-1. **View Rankings**: Visit `http://localhost:5000/`
-2. **Record Match**: Click "Record New Match" or visit `http://localhost:5000/record`
+1. **View Rankings**: Visit `http://localhost:8000/`
+2. **Record Match**: Click "Record New Match" or visit `http://localhost:8000/record`
 3. **Fill Form**:
    - Select match type (Singles/Doubles)
    - Choose players from dropdowns
@@ -265,13 +279,15 @@ Edit `config.json`:
   ```
 - Look for error messages in server console
 
-### Port 5000 already in use
+### Port 8000 already in use
 
-Change port in `server.py`:
+Change port in `server.py` line 243:
 
 ```python
-app.run(host='0.0.0.0', port=5001, debug=True)  # Use 5001 instead
+app.run(host='0.0.0.0', port=8001, debug=True)  # Use 8001 instead
 ```
+
+Also update line 235 with the new port in the startup message.
 
 ## API Endpoints
 
@@ -286,7 +302,7 @@ If you want to integrate with other tools:
 ### Example: Submit Match via API
 
 ```bash
-curl -X POST http://localhost:5000/api/matches \
+curl -X POST http://localhost:8000/api/matches \
   -H "Content-Type: application/json" \
   -d '{
     "date": "2025-10-22",
@@ -318,7 +334,7 @@ Your data is never lost!
 - **Backup**: Commit `matches/` directory to Git regularly
 - **Player Names**: Be consistent with spelling and capitalization
 - **Testing**: Use `players.csv` to add test players first
-- **Access from other devices**: Use `http://YOUR_IP:5000/` instead of `localhost`
+- **Access from other devices**: Use `http://YOUR_IP:8000/` instead of `localhost`
 
 ## Support
 

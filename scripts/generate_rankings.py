@@ -4,6 +4,7 @@ Pickleball League Rankings Generator
 
 Generates rankings for both singles and doubles matches using ELO rating system.
 Reads YAML match files and outputs rankings data.
+Supports both local filesystem and Google Cloud Storage backends.
 """
 
 import os
@@ -12,6 +13,13 @@ import json
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
+
+# Google Cloud Storage imports
+try:
+    from google.cloud import storage
+    GCS_AVAILABLE = True
+except ImportError:
+    GCS_AVAILABLE = False
 
 # ELO Rating Configuration
 K_FACTOR = 32  # Rating volatility factor
@@ -35,10 +43,24 @@ def update_elo(winner_rating, loser_rating, k=K_FACTOR):
 
 
 class RankingsGenerator:
-    def __init__(self, base_dir):
+    def __init__(self, base_dir, use_gcs=False, gcs_project=None, gcs_matches_bucket=None, gcs_config_bucket=None):
         self.base_dir = Path(base_dir)
         self.singles_dir = self.base_dir / "matches" / "singles"
         self.doubles_dir = self.base_dir / "matches" / "doubles"
+
+        # Cloud Storage configuration
+        self.use_gcs = use_gcs
+        self.gcs_project = gcs_project
+        self.gcs_matches_bucket = gcs_matches_bucket
+        self.gcs_config_bucket = gcs_config_bucket
+        self.storage_client = None
+
+        if self.use_gcs and GCS_AVAILABLE:
+            try:
+                self.storage_client = storage.Client(project=self.gcs_project)
+            except Exception as e:
+                print(f"Warning: Could not connect to GCS: {e}")
+                self.use_gcs = False
 
         # Singles data
         self.singles_ratings = {}
@@ -58,14 +80,37 @@ class RankingsGenerator:
             'wins': 0, 'losses': 0, 'games_won': 0, 'games_lost': 0, 'matches_played': 0
         })
 
-    def load_yaml_file(self, filepath):
-        """Load a YAML match file."""
+    def list_gcs_files(self, bucket_name, prefix):
+        """List all files in a GCS bucket with given prefix."""
         try:
-            with open(filepath, 'r') as f:
-                return yaml.safe_load(f)
+            bucket = self.storage_client.bucket(bucket_name)
+            blobs = list(bucket.list_blobs(prefix=prefix))
+            yaml_files = [blob for blob in blobs if blob.name.endswith(('.yml', '.yaml'))]
+            # Sort by name (which includes timestamp)
+            yaml_files.sort(key=lambda b: b.name)
+            return yaml_files
         except Exception as e:
-            print(f"Error loading {filepath}: {e}")
-            return None
+            print(f"Error listing GCS files: {e}")
+            return []
+
+    def load_yaml_file(self, filepath):
+        """Load a YAML match file (local or GCS)."""
+        if self.use_gcs:
+            # filepath is actually a GCS blob
+            try:
+                yaml_content = filepath.download_as_string()
+                yaml_text = yaml_content.decode('utf-8') if isinstance(yaml_content, bytes) else yaml_content
+                return yaml.safe_load(yaml_text)
+            except Exception as e:
+                print(f"Error loading GCS file {filepath.name}: {e}")
+                return None
+        else:
+            try:
+                with open(filepath, 'r') as f:
+                    return yaml.safe_load(f)
+            except Exception as e:
+                print(f"Error loading {filepath}: {e}")
+                return None
 
     def process_singles_match(self, match_data):
         """Process a singles match and update ratings/stats."""
@@ -197,27 +242,38 @@ class RankingsGenerator:
         except Exception as e:
             print(f"Error processing doubles match: {e}")
 
-    def get_sorted_match_files(self, directory):
+    def get_sorted_match_files(self, directory, gcs_prefix=None):
         """Get all YAML files sorted by date."""
-        if not directory.exists():
-            return []
-
-        yaml_files = list(directory.glob("*.yml")) + list(directory.glob("*.yaml"))
-
-        # Sort by date in filename (assuming format: YYYY-MM-DD-*.yml)
-        def get_date(filepath):
-            try:
-                date_str = filepath.stem.split('-')[:3]
-                return datetime.strptime('-'.join(date_str), '%Y-%m-%d')
-            except:
-                return datetime.min
-
-        return sorted(yaml_files, key=get_date)
+        if self.use_gcs:
+            # Use GCS prefix instead of local directory
+            blobs = self.list_gcs_files(self.gcs_matches_bucket, gcs_prefix)
+            # Sort by date in filename (assuming format: YYYY-MM-DD-*.yml)
+            def get_date(blob):
+                try:
+                    # Extract date from blob name
+                    filename = blob.name.split('/')[-1]  # Get filename from path
+                    date_str = filename.split('-')[:3]
+                    return datetime.strptime('-'.join(date_str), '%Y-%m-%d')
+                except:
+                    return datetime.min
+            return sorted(blobs, key=get_date)
+        else:
+            if not directory.exists():
+                return []
+            yaml_files = list(directory.glob("*.yml")) + list(directory.glob("*.yaml"))
+            # Sort by date in filename (assuming format: YYYY-MM-DD-*.yml)
+            def get_date(filepath):
+                try:
+                    date_str = filepath.stem.split('-')[:3]
+                    return datetime.strptime('-'.join(date_str), '%Y-%m-%d')
+                except:
+                    return datetime.min
+            return sorted(yaml_files, key=get_date)
 
     def generate_singles_rankings(self):
         """Generate singles rankings from all singles match files."""
         print("Processing singles matches...")
-        match_files = self.get_sorted_match_files(self.singles_dir)
+        match_files = self.get_sorted_match_files(self.singles_dir, 'singles')
 
         for match_file in match_files:
             match_data = self.load_yaml_file(match_file)
@@ -254,7 +310,7 @@ class RankingsGenerator:
     def generate_doubles_rankings(self):
         """Generate doubles rankings (team-based) from all doubles match files."""
         print("Processing doubles matches (team rankings)...")
-        match_files = self.get_sorted_match_files(self.doubles_dir)
+        match_files = self.get_sorted_match_files(self.doubles_dir, 'doubles')
 
         for match_file in match_files:
             match_data = self.load_yaml_file(match_file)
@@ -333,11 +389,21 @@ class RankingsGenerator:
         }
 
         # Save to JSON file
-        output_file = self.base_dir / "rankings.json"
-        with open(output_file, 'w') as f:
-            json.dump(output, f, indent=2)
+        json_content = json.dumps(output, indent=2)
 
-        print(f"\nRankings saved to: {output_file}")
+        if self.use_gcs:
+            try:
+                bucket = self.storage_client.bucket(self.gcs_config_bucket)
+                blob = bucket.blob('rankings.json')
+                blob.upload_from_string(json_content)
+                print(f"\n✓ Rankings saved to: gs://{self.gcs_config_bucket}/rankings.json")
+            except Exception as e:
+                print(f"Error saving rankings to GCS: {e}")
+        else:
+            output_file = self.base_dir / "rankings.json"
+            with open(output_file, 'w') as f:
+                f.write(json_content)
+            print(f"\n✓ Rankings saved to: {output_file}")
 
         # Print summary
         print("\n=== SINGLES RANKINGS ===")
@@ -382,9 +448,27 @@ def main():
     else:
         base_dir = Path(__file__).parent.parent
 
-    print(f"Generating rankings for: {base_dir}\n")
+    # Check if using GCS
+    use_gcs = os.getenv('USE_GCS', 'false').lower() == 'true'
+    gcs_project = os.getenv('GOOGLE_CLOUD_PROJECT')
+    gcs_matches_bucket = os.getenv('GCS_MATCHES_BUCKET', 'pickleball-matches-data')
+    gcs_config_bucket = os.getenv('GCS_CONFIG_BUCKET', 'pickleball-config-data')
 
-    generator = RankingsGenerator(base_dir)
+    if use_gcs:
+        print(f"Generating rankings from Google Cloud Storage\n")
+        print(f"  Project: {gcs_project}")
+        print(f"  Matches bucket: {gcs_matches_bucket}")
+        print(f"  Config bucket: {gcs_config_bucket}\n")
+    else:
+        print(f"Generating rankings for: {base_dir}\n")
+
+    generator = RankingsGenerator(
+        base_dir,
+        use_gcs=use_gcs,
+        gcs_project=gcs_project,
+        gcs_matches_bucket=gcs_matches_bucket,
+        gcs_config_bucket=gcs_config_bucket
+    )
     rankings = generator.generate_all_rankings()
 
     print("\n✓ Rankings generation complete!")

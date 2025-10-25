@@ -154,6 +154,9 @@ gsutil ls gs://pickleball-config-data/
 gsutil cp matches/singles/*.yml gs://pickleball-matches-data/singles/
 gsutil cp players.csv gs://pickleball-config-data/
 
+# Upload static files (images, logos, etc.)
+gsutil -m cp -r static/* gs://pickleball-config-data/static/
+
 # Download files
 gsutil cp gs://pickleball-config-data/rankings.json .
 
@@ -162,6 +165,27 @@ gsutil cat gs://pickleball-config-data/rankings.json | head -20
 
 # Delete files
 gsutil rm gs://pickleball-matches-data/singles/2025-10-22-*.yml
+```
+
+---
+
+## 🖼️ Static Files (Logo, Images)
+
+```bash
+# Upload all static files at once
+gsutil -m cp -r static/* gs://pickleball-config-data/static/
+
+# Upload specific file
+gsutil cp static/picktopia_logo.png gs://pickleball-config-data/static/picktopia_logo.png
+
+# Verify upload
+gsutil ls gs://pickleball-config-data/static/
+
+# Test access
+curl https://storage.googleapis.com/pickleball-config-data/static/picktopia_logo.png -o /tmp/test.png
+
+# View files in HTML
+gsutil cat gs://pickleball-config-data/index.html | grep "picktopia_logo.png"
 ```
 
 ---
@@ -291,6 +315,8 @@ Do you want to:
 - [ ] Cloud Storage buckets created
 - [ ] Service account created with permissions
 - [ ] Data uploaded to Cloud Storage
+- [ ] Static files (logo/images) uploaded to GCS
+- [ ] Logo displays correctly on rankings and match form pages
 - [ ] Environment variables configured
 - [ ] Docker image builds: `docker build -t pickleball-app .`
 - [ ] Docker container runs: `docker run -p 8080:8080 pickleball-app:latest`

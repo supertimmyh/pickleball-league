@@ -10,7 +10,7 @@
     "primary": "#082946",
     "accent": "#e0672b"
   },
-  "logo_path": "/static/logo-placeholder.png",
+  "logo_path": "/static/picktopia_logo.png",
   "elo_k_factor": 32,
   "default_rating": 1200
 }

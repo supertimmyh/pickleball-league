@@ -17,6 +17,16 @@ from pathlib import Path
 from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory, send_file
 
+# Load environment variables from .env.development if it exists
+try:
+    from dotenv import load_dotenv
+    env_file = Path(__file__).parent / '.env.development'
+    if env_file.exists():
+        load_dotenv(env_file)
+        print(f"✓ Loaded environment variables from {env_file}")
+except ImportError:
+    pass
+
 # Google Cloud Storage imports
 try:
     from google.cloud import storage
@@ -53,7 +63,7 @@ if USE_GCS and GCS_AVAILABLE:
         USE_GCS = False
 
 # Initialize Flask app
-app = Flask(__name__, static_folder=str(BASE_DIR))
+app = Flask(__name__, static_folder=str(BASE_DIR / 'static'))
 
 # Helper functions for Cloud Storage operations
 def read_file_from_gcs(bucket_name, file_path):
@@ -161,7 +171,8 @@ def index():
     if USE_GCS:
         html_data = read_file_from_gcs(GCS_CONFIG_BUCKET, 'index.html')
         if html_data:
-            return html_data.decode('utf-8') if isinstance(html_data, bytes) else html_data
+            html_text = html_data.decode('utf-8') if isinstance(html_data, bytes) else html_data
+            return html_text, 200, {'Content-Type': 'text/html; charset=utf-8'}
         else:
             return jsonify({"error": "Rankings not generated yet. Please add some matches first."}), 404
     else:
@@ -285,8 +296,23 @@ def submit_match():
 
 @app.route('/static/<path:path>')
 def serve_static(path):
-    """Serve static files."""
-    return send_from_directory(BASE_DIR, path)
+    """Serve static files from local filesystem or GCS."""
+    if USE_GCS:
+        # Serve from GCS
+        file_data = read_file_from_gcs(GCS_CONFIG_BUCKET, f'static/{path}')
+        if file_data is None:
+            return jsonify({"error": "Static file not found"}), 404
+
+        # Determine content type based on file extension
+        import mimetypes
+        content_type, _ = mimetypes.guess_type(path)
+        if content_type is None:
+            content_type = 'application/octet-stream'
+
+        return file_data, 200, {'Content-Type': content_type}
+    else:
+        # Serve from local filesystem
+        return send_from_directory(app.static_folder, path)
 
 
 # Error handlers

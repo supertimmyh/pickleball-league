@@ -180,14 +180,12 @@ def generate_index_page(rankings_data, config, output_path, use_gcs=False, stora
             width: 100px;
             height: 100px;
             margin: 0 auto 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255,255,255,0.5);
-            font-size: 14px;
-            border: 3px dashed rgba(255,255,255,0.3);
+        }}
+
+        .logo-placeholder img {{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }}
 
         .header h1 {{
@@ -415,7 +413,9 @@ def generate_index_page(rankings_data, config, output_path, use_gcs=False, stora
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo-placeholder">[LOGO]</div>
+            <div class="logo-placeholder">
+                <img src="/static/picktopia_logo.png" alt="League Logo">
+            </div>
             <h1>{league_name}</h1>
             <div class="subtitle">{league_desc}</div>
             <div class="updated">Last updated: {generated_time}</div>

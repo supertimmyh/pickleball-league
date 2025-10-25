@@ -503,6 +503,106 @@ gcloud projects delete $PROJECT_ID
 
 ---
 
+## 🖼️ Static Files (Images, Logos, etc.)
+
+### Overview
+
+The application uses **GCS-based static file serving** in production. Static files (like the league logo) are stored in Google Cloud Storage and served directly from the `/static/` route.
+
+### Setup Static Files
+
+#### 1. Prepare Your Static Files
+
+Your static files should include the league logo. Example structure:
+```
+static/
+├── picktopia_logo.png        # League logo (or your custom logo)
+└── [other static files]
+```
+
+#### 2. Upload Static Files to GCS
+
+Upload static files to the `pickleball-config-data` bucket:
+
+```bash
+# Set your bucket name
+GCS_CONFIG_BUCKET="pickleball-config-data"
+
+# Upload all static files
+gsutil -m cp -r static/* gs://$GCS_CONFIG_BUCKET/static/
+
+# Verify upload
+gsutil ls gs://$GCS_CONFIG_BUCKET/static/
+```
+
+Or upload individual files:
+
+```bash
+# Upload just the logo
+gsutil cp static/picktopia_logo.png gs://$GCS_CONFIG_BUCKET/static/picktopia_logo.png
+
+# Verify
+gsutil cat gs://$GCS_CONFIG_BUCKET/static/picktopia_logo.png > /tmp/logo.png
+open /tmp/logo.png  # Verify it's correct
+```
+
+#### 3. How Static Files Are Served
+
+When `USE_GCS=true`:
+- Browser requests `/static/picktopia_logo.png`
+- Flask server fetches from `gs://pickleball-config-data/static/picktopia_logo.png`
+- File is returned with correct MIME type (image/png, etc.)
+
+When `USE_GCS=false` (local development):
+- Files are served from the local `static/` directory
+- No GCS access required
+
+#### 4. Update Logo in Your Pages
+
+The logo is referenced in:
+- `index.html` - Displays on rankings page
+- `match-form.html` - Displays on match recording form
+- Both use: `<img src="/static/picktopia_logo.png" alt="League Logo">`
+
+The `scripts/build_pages.py` automatically includes this image reference when generating `index.html`.
+
+#### 5. Supported Static File Types
+
+Any file type can be served (with automatic MIME type detection):
+- Images: `.png`, `.jpg`, `.gif`, `.svg`
+- Stylesheets: `.css`
+- Scripts: `.js`
+- Fonts: `.woff`, `.woff2`, `.ttf`
+- Documents: `.pdf`, `.txt`
+
+#### 6. Troubleshooting Static Files
+
+**Logo not displaying on rankings page?**
+
+```bash
+# Verify file exists in GCS
+gsutil ls gs://pickleball-config-data/static/picktopia_logo.png
+
+# Check permissions
+gsutil acl ch -u AllUsers:R gs://pickleball-config-data/static/picktopia_logo.png
+
+# Test direct download
+curl https://storage.googleapis.com/pickleball-config-data/static/picktopia_logo.png \
+  -o /tmp/test-logo.png
+
+# Verify index.html contains the img tag
+gsutil cat gs://pickleball-config-data/index.html | grep "picktopia_logo.png"
+```
+
+**Static files working locally but not on Cloud Run?**
+
+1. Verify files are uploaded to GCS
+2. Check `GCS_CONFIG_BUCKET` environment variable is set
+3. Verify service account has `storage.objects.get` permission
+4. Check Cloud Run logs: `gcloud run logs read pickleball-app`
+
+---
+
 ## 📚 Resources
 
 - [Cloud Run Documentation](https://cloud.google.com/run/docs)
@@ -521,12 +621,14 @@ gcloud projects delete $PROJECT_ID
 - [ ] Cloud Storage buckets created
 - [ ] Service account created with permissions
 - [ ] Initial data uploaded to Cloud Storage
+- [ ] Static files uploaded to GCS (logo, images, etc.)
 - [ ] Application deployed to Cloud Run
 - [ ] Environment variables configured
 - [ ] Tested rankings page
-- [ ] Tested match form
+- [ ] Tested match form (with logo displaying)
 - [ ] Tested match submission
 - [ ] Verified data in Cloud Storage
+- [ ] Verified static files serving from GCS
 - [ ] Reviewed Cloud Run logs
 - [ ] Set up monitoring/alerts (optional)
 - [ ] Configured CI/CD with Cloud Build (optional)

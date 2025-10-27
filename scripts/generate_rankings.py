@@ -10,6 +10,9 @@ Supports both local filesystem and Google Cloud Storage backends.
 import os
 import yaml
 import json
+import time
+import fcntl
+import sys
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
@@ -40,6 +43,174 @@ def update_elo(winner_rating, loser_rating, k=K_FACTOR):
     new_loser_rating = loser_rating + k * (0 - expected_loss)
 
     return new_winner_rating, new_loser_rating
+
+
+class LockManager:
+    """Manages file-based locking to prevent concurrent ranking generation."""
+
+    def __init__(self, lock_file_path, timeout=30, wait_interval=0.5):
+        """Initialize the lock manager.
+
+        Args:
+            lock_file_path: Path to the lock file
+            timeout: Maximum time to wait for lock (seconds)
+            wait_interval: Time between lock acquisition attempts (seconds)
+        """
+        self.lock_file_path = Path(lock_file_path)
+        self.timeout = timeout
+        self.wait_interval = wait_interval
+        self.lock_file = None
+        self.acquired = False
+
+    def acquire(self):
+        """Attempt to acquire the lock."""
+        start_time = time.time()
+
+        while time.time() - start_time < self.timeout:
+            try:
+                # Create lock file's parent directory if needed
+                self.lock_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+                # Try to open and lock the file (non-blocking on some systems)
+                self.lock_file = open(self.lock_file_path, 'w')
+                fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                self.acquired = True
+                self.lock_file.write(f"Locked at {datetime.now().isoformat()}\n")
+                self.lock_file.flush()
+                print(f"✓ Acquired lock: {self.lock_file_path}")
+                return True
+            except (IOError, OSError) as e:
+                # Lock is held by another process
+                elapsed = time.time() - start_time
+                print(f"⏳ Waiting for lock (elapsed: {elapsed:.1f}s)...")
+                time.sleep(self.wait_interval)
+
+        print(f"✗ Failed to acquire lock after {self.timeout} seconds")
+        return False
+
+    def release(self):
+        """Release the lock."""
+        if self.lock_file and self.acquired:
+            try:
+                fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_UN)
+                self.lock_file.close()
+                self.acquired = False
+                print(f"✓ Released lock: {self.lock_file_path}")
+            except Exception as e:
+                print(f"Warning: Error releasing lock: {e}")
+
+    def __enter__(self):
+        """Context manager entry."""
+        self.acquire()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit."""
+        self.release()
+
+
+def get_newest_match_timestamp(base_dir, use_gcs=False, gcs_client=None, gcs_matches_bucket=None):
+    """Get the timestamp of the newest match file.
+
+    Args:
+        base_dir: Base directory path
+        use_gcs: Whether to use Google Cloud Storage
+        gcs_client: GCS client instance (required if use_gcs=True)
+        gcs_matches_bucket: GCS bucket name for matches
+
+    Returns:
+        Timestamp as float (seconds since epoch), or 0 if no matches exist
+    """
+    if use_gcs and gcs_client:
+        try:
+            bucket = gcs_client.bucket(gcs_matches_bucket)
+            all_blobs = list(bucket.list_blobs(prefix='singles')) + list(bucket.list_blobs(prefix='doubles'))
+
+            if all_blobs:
+                # Get the most recently updated blob
+                newest = max(all_blobs, key=lambda b: b.time_updated)
+                return newest.time_updated.timestamp()
+        except Exception as e:
+            print(f"Error getting newest match timestamp from GCS: {e}")
+        return 0
+    else:
+        # Local filesystem
+        singles_dir = Path(base_dir) / "matches" / "singles"
+        doubles_dir = Path(base_dir) / "matches" / "doubles"
+
+        match_files = []
+        if singles_dir.exists():
+            match_files.extend(singles_dir.glob("*.yml"))
+            match_files.extend(singles_dir.glob("*.yaml"))
+        if doubles_dir.exists():
+            match_files.extend(doubles_dir.glob("*.yml"))
+            match_files.extend(doubles_dir.glob("*.yaml"))
+
+        if match_files:
+            return max(f.stat().st_mtime for f in match_files)
+        return 0
+
+
+def get_last_generation_timestamp(base_dir, use_gcs=False, gcs_client=None, gcs_config_bucket=None):
+    """Get the timestamp of when rankings were last generated.
+
+    Args:
+        base_dir: Base directory path
+        use_gcs: Whether to use Google Cloud Storage
+        gcs_client: GCS client instance (required if use_gcs=True)
+        gcs_config_bucket: GCS bucket name for config
+
+    Returns:
+        Timestamp as float (seconds since epoch), or 0 if never generated
+    """
+    if use_gcs and gcs_client:
+        try:
+            bucket = gcs_client.bucket(gcs_config_bucket)
+            blob = bucket.blob('last_generation.timestamp')
+            timestamp_str = blob.download_as_string().decode('utf-8').strip()
+            return float(timestamp_str)
+        except Exception:
+            # File doesn't exist or error reading it
+            return 0
+    else:
+        # Local filesystem
+        timestamp_file = Path(base_dir) / "last_generation.timestamp"
+        if timestamp_file.exists():
+            try:
+                with open(timestamp_file, 'r') as f:
+                    return float(f.read().strip())
+            except Exception:
+                return 0
+        return 0
+
+
+def save_generation_timestamp(base_dir, timestamp, use_gcs=False, gcs_client=None, gcs_config_bucket=None):
+    """Save the current generation timestamp.
+
+    Args:
+        base_dir: Base directory path
+        timestamp: Timestamp to save (seconds since epoch)
+        use_gcs: Whether to use Google Cloud Storage
+        gcs_client: GCS client instance (required if use_gcs=True)
+        gcs_config_bucket: GCS bucket name for config
+    """
+    timestamp_str = str(timestamp)
+
+    if use_gcs and gcs_client:
+        try:
+            bucket = gcs_client.bucket(gcs_config_bucket)
+            blob = bucket.blob('last_generation.timestamp')
+            blob.upload_from_string(timestamp_str)
+        except Exception as e:
+            print(f"Warning: Could not save generation timestamp to GCS: {e}")
+    else:
+        # Local filesystem
+        try:
+            timestamp_file = Path(base_dir) / "last_generation.timestamp"
+            with open(timestamp_file, 'w') as f:
+                f.write(timestamp_str)
+        except Exception as e:
+            print(f"Warning: Could not save generation timestamp: {e}")
 
 
 class RankingsGenerator:
@@ -462,16 +633,67 @@ def main():
     else:
         print(f"Generating rankings for: {base_dir}\n")
 
-    generator = RankingsGenerator(
-        base_dir,
-        use_gcs=use_gcs,
-        gcs_project=gcs_project,
-        gcs_matches_bucket=gcs_matches_bucket,
-        gcs_config_bucket=gcs_config_bucket
-    )
-    rankings = generator.generate_all_rankings()
+    # Initialize storage client if using GCS
+    storage_client = None
+    if use_gcs and GCS_AVAILABLE:
+        try:
+            storage_client = storage.Client(project=gcs_project)
+        except Exception as e:
+            print(f"Warning: Could not connect to GCS: {e}")
+            use_gcs = False
 
-    print("\n✓ Rankings generation complete!")
+    # Acquire lock to prevent concurrent ranking generation
+    lock_file = Path(base_dir) / "rankings.lock"
+    with LockManager(lock_file, timeout=30) as lock_mgr:
+        if not lock_mgr.acquired:
+            print("✗ Could not acquire lock. Another ranking generation may be in progress.")
+            sys.exit(1)
+
+        # Check if there are new matches since last generation
+        newest_match_time = get_newest_match_timestamp(
+            base_dir,
+            use_gcs=use_gcs,
+            gcs_client=storage_client,
+            gcs_matches_bucket=gcs_matches_bucket
+        )
+        last_generation_time = get_last_generation_timestamp(
+            base_dir,
+            use_gcs=use_gcs,
+            gcs_client=storage_client,
+            gcs_config_bucket=gcs_config_bucket
+        )
+
+        # Skip if no new matches
+        if newest_match_time > 0 and last_generation_time > 0 and newest_match_time <= last_generation_time:
+            print("⏭️  No new matches since last generation. Skipping ranking update.")
+            print(f"   Last generation: {datetime.fromtimestamp(last_generation_time).isoformat()}")
+            print(f"   Newest match: {datetime.fromtimestamp(newest_match_time).isoformat()}")
+            sys.exit(0)
+
+        if newest_match_time == 0:
+            print("ℹ️  No matches found. Generating empty rankings.")
+
+        print("🔄 Generating rankings...\n")
+
+        generator = RankingsGenerator(
+            base_dir,
+            use_gcs=use_gcs,
+            gcs_project=gcs_project,
+            gcs_matches_bucket=gcs_matches_bucket,
+            gcs_config_bucket=gcs_config_bucket
+        )
+        rankings = generator.generate_all_rankings()
+
+        # Save generation timestamp
+        save_generation_timestamp(
+            base_dir,
+            time.time(),
+            use_gcs=use_gcs,
+            gcs_client=storage_client,
+            gcs_config_bucket=gcs_config_bucket
+        )
+
+        print("\n✓ Rankings generation complete!")
 
 
 if __name__ == "__main__":

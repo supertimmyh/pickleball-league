@@ -120,48 +120,14 @@ def load_players():
 
 
 def regenerate_rankings():
-    """Run the ranking generation and page building scripts."""
-    try:
-        # Set environment variables for subprocess
-        env = os.environ.copy()
-        env['USE_GCS'] = str(USE_GCS).lower()
-        if USE_GCS:
-            env['GOOGLE_CLOUD_PROJECT'] = GOOGLE_CLOUD_PROJECT
-            env['GCS_MATCHES_BUCKET'] = GCS_MATCHES_BUCKET
-            env['GCS_CONFIG_BUCKET'] = GCS_CONFIG_BUCKET
+    """Mark rankings as needing update (called via Cloud Scheduler).
 
-        # Generate rankings
-        result1 = subprocess.run(
-            [sys.executable, str(BASE_DIR / "scripts" / "generate_rankings.py")],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            env=env
-        )
-
-        if result1.returncode != 0:
-            print(f"Error generating rankings: {result1.stderr}")
-            return False
-
-        # Build HTML pages
-        result2 = subprocess.run(
-            [sys.executable, str(BASE_DIR / "scripts" / "build_pages.py")],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            env=env
-        )
-
-        if result2.returncode != 0:
-            print(f"Error building pages: {result2.stderr}")
-            return False
-
-        print("✓ Rankings regenerated successfully")
-        return True
-
-    except Exception as e:
-        print(f"Error regenerating rankings: {e}")
-        return False
+    Note: Match submission no longer directly regenerates rankings.
+    Rankings are updated periodically by Cloud Scheduler job to prevent
+    race conditions in multi-instance environments.
+    """
+    print("✓ Match saved. Rankings will be updated by scheduled job.")
+    return True
 
 
 # Routes
@@ -313,6 +279,65 @@ def serve_static(path):
     else:
         # Serve from local filesystem
         return send_from_directory(app.static_folder, path)
+
+
+@app.route('/api/regenerate-rankings', methods=['POST'])
+def api_regenerate_rankings():
+    """Manually trigger ranking regeneration (admin endpoint).
+
+    This endpoint runs the full ranking generation and page building
+    process. It should be protected by authentication in production.
+    """
+    try:
+        # Set environment variables for subprocess
+        env = os.environ.copy()
+        env['USE_GCS'] = str(USE_GCS).lower()
+        if USE_GCS:
+            env['GOOGLE_CLOUD_PROJECT'] = GOOGLE_CLOUD_PROJECT
+            env['GCS_MATCHES_BUCKET'] = GCS_MATCHES_BUCKET
+            env['GCS_CONFIG_BUCKET'] = GCS_CONFIG_BUCKET
+
+        # Run generate_rankings.py (now with locking and smart detection)
+        result1 = subprocess.run(
+            [sys.executable, str(BASE_DIR / "scripts" / "generate_rankings.py")],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=env
+        )
+
+        if result1.returncode != 0:
+            print(f"Error generating rankings: {result1.stderr}")
+            return jsonify({
+                "error": "Failed to generate rankings",
+                "details": result1.stderr
+            }), 500
+
+        # Build HTML pages
+        result2 = subprocess.run(
+            [sys.executable, str(BASE_DIR / "scripts" / "build_pages.py")],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=env
+        )
+
+        if result2.returncode != 0:
+            print(f"Error building pages: {result2.stderr}")
+            return jsonify({
+                "error": "Failed to build pages",
+                "details": result2.stderr
+            }), 500
+
+        print("✓ Manual rankings regeneration completed successfully")
+        return jsonify({
+            "message": "Rankings regenerated successfully",
+            "timestamp": datetime.now().isoformat()
+        }), 200
+
+    except Exception as e:
+        print(f"Error regenerating rankings: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 # Error handlers

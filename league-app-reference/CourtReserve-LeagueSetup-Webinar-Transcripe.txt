@@ -1,0 +1,562 @@
+# tactiq.io free youtube transcript
+# No title found
+# https://www.youtube.com/watch/Hti4yJSrz0Y
+
+00:00:00.060 well hello everyone it's finally here it's our league setup webinar we are so
+00:00:06.960 excited to share with you today for you especially on McCall who have devoted
+00:00:12.000 this hour to Beta the new court Reserve League platform I'm Ashley with court reserve and we're going to have Tim take
+00:00:18.720 us through this today this is going to be recorded it is in the zoom webinar format so you can go back and and see if
+00:00:27.359 there's questions we will be developing some written information almost like our
+00:00:32.460 knowledge base already that's not quite ready yet but why wait we're just going to go ahead teach you how to set up
+00:00:38.760 leagues today now it is going to take about 24 hours for us to make sure that your facility has leagues turned on and
+00:00:46.680 remember this is going to be in beta so we want your feedback and how it's working and maybe things we've missed
+00:00:52.260 and again that's why we're here that's why we're doing this for you so let's go ahead and get started do want to remind
+00:00:59.460 you that Catalyst our first Court Reserve user conference is coming up in just a matter of weeks the seats are
+00:01:06.180 going quickly so if you or a staff member is considering coming and spending two full days of training
+00:01:12.000 having your one-on-one session with our trainers I would encourage you to go ahead and get your tickets today the
+00:01:18.299 first come first serve on the slots those are running out as well so don't forget that um is coming up in just a
+00:01:24.720 matter of weeks um near Salt Lake City and then Club pickleball Mastermind is a couple days after that if you are
+00:01:31.140 involved in pickleball and want to know best practices how to Market your pickleball facility what's best practice
+00:01:36.780 around social media how do you run memberships how do you do programming I'm telling you you do not want to miss
+00:01:42.060 Mastermind either so Tim I think we are ready to get started
+00:01:48.840 awesome thank you Ashley great introduction so I do want to before we get started this is going to be a little
+00:01:54.119 bit different than last week but I do want to do a quick review I think most of you I think all of you actually was
+00:01:59.340 on the call last week but I just want to do a quick recap of where we left off and what we can expect in this phase one
+00:02:06.540 of the league platform so I just wanted to do a a quick um
+00:02:12.120 touch base on what league types will be available so again we are going to be starting
+00:02:18.780 with flex rotational leagues these leagues will be doubles only
+00:02:24.239 um it will support men's leagues women's leagues and co-ed leads um and then the future types that we got
+00:02:30.900 coming are the team-based leagues time-based rotationals singles and skinny singles we're going
+00:02:37.680 to support the MLP format we are going to support challenge ladders and we are going to support our tennis clubs as
+00:02:45.060 well so again we're going to dive in I'm going to go through walk you through every bit of setup on what it takes to
+00:02:51.480 set up and stand up a flex league in just a minute but I just wanted to do a quick recap there so that everybody on
+00:02:57.720 the call knows when you go to turn this on on Monday Flex League will be the only type of lead that you will be able
+00:03:03.780 to Beta so what is exactly a flex League Flex sleeves or where you allow your players
+00:03:09.540 to register and they are ranked individually so players will play with a different combination of players week
+00:03:15.300 the week it is a ladder feel where players are moving up and falling down the ladder
+00:03:21.000 based on performance we are going to be supporting two initial ranking algorithms that I'll get to in a little
+00:03:26.819 bit during the setup uh one being a buy percentage and the other being a one up and one down scenario the the reason
+00:03:34.319 that we went with this it is super flexible it's going to allow for you to eat really easily run leagues
+00:03:40.980 your players to find it super simple and not have to worry about scheduling conflicts that the the teams introduced
+00:03:46.739 so we wanted to really start Simple Start small and start flexible so that's why we decided to to launch with flex
+00:03:52.560 leagues and it is the most popular League format out there for pickleball so players each week will have an option
+00:04:00.120 to opt in to play each game day so players can miss weeks it's not um like
+00:04:05.700 a committedly you definitely want to encourage you definitely want to um you know make sure that your players
+00:04:11.400 hey the League's gonna run better if you all play but players if something comes up can miss weeks without penalization
+00:04:17.459 and then this also allows you again as I mentioned been able to play with multiple sets of players week to week
+00:04:23.699 and it also is going to support uh five and four I'm sorry four and five player
+00:04:30.180 courts the based on feedback the one thing that we may be working on over the next week uh to two weeks you won't have
+00:04:37.199 it Monday but we are going to support a six and seven Player Court model I know
+00:04:43.199 that that may make some of you cringe but we want we want you to have the we don't want you to run into scenario
+00:04:49.380 where you only get six players signed up or or opting in the dreaded 11 and not
+00:04:54.900 being able or having to tell somebody they can't play a when in fact they've already paid and that that's gonna maybe
+00:05:00.900 upset them away a little bit if you don't let them play so I will explain a little bit more how that's going to work later on in the demo so let's just jump
+00:05:08.100 right into it so I will um well let's just hold questions so when I get into the demo if Ashley and I
+00:05:14.699 think Kim's moderating as well if you guys ask a question they're going to interrupt me and I will answer your
+00:05:21.000 question I'm trying to move pretty quickly so I'm talking a little fast because I want to got a lot to cover and I want to make sure to honor your time
+00:05:26.880 so let's just jump right in and while I'm doing that if you have anything actually you want to ask me Now's the
+00:05:32.100 Time to do it yeah I do so if I start a league tonight Tim and uh I get my Beta
+00:05:39.000 up on Monday can I go in and enter my scores from a league that I started
+00:05:44.220 today tomorrow or Saturday on Monday uh yes you can actually you'll have to do
+00:05:49.620 that obviously it would probably be best if you you know when you create the league as you're going to see me do here in a minute you just want to make sure
+00:05:55.680 that your first start date is actually um the actual date you start so if that's this weekend just make sure your
+00:06:01.800 start date is this Saturday and then yeah once you get beta you can put your players in rank them the based on how
+00:06:07.680 they're going to be playing this weekend opt them in based on who showed up and then yeah enter your scores finalize
+00:06:13.500 that game day and all your standings will be updated and then all your players can start opting in immediately for the next week great question
+00:06:21.900 is that it that's it okay awesome so we're just
+00:06:27.840 going to jump right into this uh I'm gonna walk you through um the creating Elite creating Elite
+00:06:33.840 session creating your schedule and registering in this first bit and then we'll get into sort of showing you how
+00:06:39.900 to manually set your rankings for the for week one and the different ranking types that you can set up I'm going to
+00:06:46.139 simulate a game day I'm going to show you what the standings look like I'm actually going to go over to the mobile side so you can see what the players are
+00:06:52.860 going to see I'm going to show you how the players enter scores um and show you some other goodies along
+00:06:58.259 the way so let's just get in to creating your first league so the leagues are going to show up on the
+00:07:05.220 left nav so you're going to go into settings not going to show that in your add-ons there will be a league option so
+00:07:11.639 on Monday you'll see it you just say enable it is not going to be it's not going to be any charge while you're in
+00:07:16.919 beta mode we'll disclose later on down the road when we will start charging for leagues but yes when you set this up on
+00:07:23.759 Monday you will not be charging anything once you add that add-on you will see the leagues over here in your left now
+00:07:29.759 so to create your league pretty intuitive click the create League button and we're going to go through this
+00:07:36.120 process so what we're going to do is we'll create an advanced
+00:07:42.240 if I can spell correctly events co-ed let's call it 4.5 okay now the sport
+00:07:49.259 here we sort of made it very easy for you to know what features we have and
+00:07:54.479 what features that we have coming so anything that we have coming is still going to be displayed but it will be
+00:08:00.720 disabled so you can't really mess this up because you really can't pick tennis because tennis is not available and you
+00:08:06.300 can't pick any of these other formats either such as a fixed schedule Team league squads-based league or challenge ladder because they don't exist so um
+00:08:14.039 same with the player format and for the uh for the leak format so obviously we're going to default to be rotational
+00:08:20.699 we're going to set the leak format to be doubles and we're going to set the player format for this one to be co-ed
+00:08:26.580 and as you guys know in the audience this is if you want to just mingle all players male and female and let them all
+00:08:33.659 play together wherever they lie on the on the rankings okay now the background in text color I'm not going to change
+00:08:39.179 but this is for your schedulers so if you guys want specific leagues and you get to set this at the league level so
+00:08:45.180 this way you can have your beginner League your intermediate league and your Advanced leagues different colors to help your front desk staffer use C and
+00:08:52.080 this period differentiate the different leagues when you see them on the court sheet okay so this is actually creating
+00:08:58.140 the league so that's the first part so if I save this the next part I'm going to go into is
+00:09:04.560 creating the session so sessions you can think of as Seasons because we want to
+00:09:09.600 keep all of the sessions and Seasons together for historical purposes so that when we start showing some cool stats
+00:09:15.959 later on when we release those you can see from season to season how you did in this league so for so my
+00:09:23.160 recommended or best practice approach is to name this based on the real season you're in but if you have a different
+00:09:29.459 naming convention that your that your organization uses then feel free to use it but this is just gonna this is just
+00:09:35.880 what I do to help me remember which session I'm in so I would recommend that you probably run eight anywhere from six
+00:09:42.959 to eight to ten week sessions but again totally up to you okay now the rating category is interesting because this is
+00:09:49.440 going to be where you can restrict your leagues based on your rating category your pickleball rating category that
+00:09:56.160 players actually have stamped on their profile so just like an event if you want to restrict this Advanced leagues
+00:10:02.160 to be four or five plus players or players that have a four five or five rating you can do so here you would just
+00:10:07.860 select the pickleball and then say hey I only want this to be four or five eligible players okay now with the
+00:10:14.399 upcoming duper integration what you're going to be able to do is Select duper we don't have it built in here yet but
+00:10:20.399 you will see a Min range and a max range change and you'll just fill in those values so what that will do will allow
+00:10:27.899 and restrict it will allow you to restrict the actual League session to a particular group of players that fit
+00:10:33.660 within that duper range okay so for now for demonstration purposes I'm just going to leave that blank uh we
+00:10:40.860 also have the normal event restrictions that we have on events around age and gender so I'm not going to do this by
+00:10:47.519 age but if you wanted to run a Junior League or just a you know a 50 plus League then you could do that in
+00:10:52.920 restrict it by ages you would would an event price type
+00:10:57.959 so this is uh this is something I really wanted to just touch on uh this is how
+00:11:03.000 you price your leave so we have two options one and the most preferred option is probably going to be on League
+00:11:08.760 registration so if I click on League registration I'm gonna have I'm gonna set a price and this structure is really
+00:11:15.300 along the same lines as you would set up a league with some additional options that I'll get to in a second so if you
+00:11:20.760 are pricing your league and you want to charge one price for the entire season then you would set your pricing model to
+00:11:27.600 be only registration now if I was going to charge based on every day that that
+00:11:33.240 player opted in so if you wanted to make this like a five dollar charge every time they opted in week to week so they
+00:11:40.019 own it's a pay as you play model then we support that model as well but if you do want your money up front then I suggest
+00:11:46.560 that you do the uh buy League registration model and then set this price to whatever you wanted for now I'm
+00:11:52.560 just gonna make this a free league so we don't get any impediments around pricing okay the ranking algorithm is what I
+00:11:59.459 mentioned earlier where we support two so I will briefly describe the differences the points one percentage is
+00:12:07.079 very popular is what a lot of people are running right now it's really a percentage of your points one divided by
+00:12:14.100 your overall points played and this is cumulative so it doesn't reset every week
+00:12:19.860 so that's a that's a pro and a con the the you know some players like it and
+00:12:25.019 the players that have a bad week are the ones that are quickly going to tell you they don't like it because what happens
+00:12:30.180 is if somebody comes in and only wins like 30 percent of their points then they have a tough road to climb that
+00:12:36.240 cause it's a cumulative Point by points one as the league progresses so the one
+00:12:42.240 up one down is an interesting concept because that's only based on that week
+00:12:48.240 so if you do one up one down then your top player on a court is going to move up in ranking and your bottom player on
+00:12:54.060 a court would move down in ranking and that all the players in the middle stay within the ranking they're at based on
+00:13:00.000 how they did now you could still move within a court on one up one down so if you're playing a five player court and
+00:13:05.940 players two three and four if they have some type of if player four is number
+00:13:11.100 two that week then he would jump and go to number two but they would still stay within that same group of players hey
+00:13:16.560 Tim I explained that well but yes can you make the screen a little bit bigger I can
+00:13:22.980 how's that that's bigger yep great awesome
+00:13:28.139 so that's the ranking algorithm so for this one I'm just going to do a points one percentage
+00:13:33.240 the next option is your registered players this this option is really for how many
+00:13:41.519 players you want to actually allow to register now as I mentioned if you were on the webinar last week
+00:13:47.459 um we I've ran multiple leagues over the last eight to ten months and I usually average about an 80 opt-in rate so what
+00:13:55.320 I don't do is I don't make these two settings the same I always overfill on the registration side and then you want
+00:14:02.459 to set your sessions per game day based on the amount of courts that you're you're going to have
+00:14:08.820 so if I have four courts and I know that I can only support five-man rotations then I'm gonna set that to 20. so more
+00:14:16.860 than 20 I can't get on a court and somebody would get left out so I'm only letting the top 20 that opt-in get in
+00:14:21.959 for that game day okay in able Max movement this is going to be
+00:14:28.200 for those organizations that want to try to put mixed skilled level players in
+00:14:34.200 the same ladder this is going to prevent those major movements up and down the ladder uh up to a fixed number of spots
+00:14:41.760 so if I would set this to four then even if I have a good week or a very bad week
+00:14:47.399 I'm only going to be able to move up four spots or down four spots week to week depending on how I play okay so
+00:14:55.380 this is to prevent uh very early on somebody doing really well on court five
+00:15:01.740 and jumping all the way to Port one now I will say if you are running a four or
+00:15:07.920 five league and everybody within that league is pretty like skilled then
+00:15:13.139 absolutely guys love it to uh and and the ladies too they love to try to
+00:15:18.240 battle it out and you can take the max movement off and just let players um go where they lie based on their based on
+00:15:24.120 their play so you can just take Max movements completely off and that would allow the players to strictly be ranked
+00:15:30.060 by percentage and not have that Max movement tied to it okay so allow wait list works the same way as
+00:15:36.779 events so if you want to allow registration and then allow people as they're in your registration period to
+00:15:42.000 sign up for the wait list then obviously that works the same way events does so you would just enable that option
+00:15:48.000 so the four or five player rotation so if you want only four player rotations
+00:15:53.220 you certainly can do that uh if you do want to allow both the four and five which is what I'm going to recommend
+00:15:58.740 because it allows you to get more players more Revenue um and just get more people excited
+00:16:03.779 about playing in it we do support any number of those options or combinations so you can run both or you can one run
+00:16:10.920 one of either um and then once you have once you've designated the rotation then you set the
+00:16:16.560 type so you basically tell the system hey I want you to generate two rotations of matches and everybody plays to 11. so
+00:16:24.120 when I mean by two rotations is that you would play with each of the other partners twice and you would play each
+00:16:30.240 game to 11. and so it's no win by two in this league because we want the same number of points for all the four man
+00:16:36.480 rotations to be the same so it's 66 points in this in this model so it would
+00:16:41.639 be a straight how many points did I win divided by 66 to get your percentage now this format here
+00:16:48.660 this is an interesting concept that we and I did this because I wanted to make it easy if you printed out score sheets
+00:16:55.680 people always say oh do we play with the same person twice or do we play with each person and then do it all over
+00:17:01.920 again well you get to set that up and choose so if you do my guys prefer to stick with their Partners switch sides
+00:17:08.339 and then play another game with the same partner and then switch Partners so if
+00:17:13.380 you like that format you would want to use back to back if you did want to alternate partner every game and then go
+00:17:18.720 through it all again then you would alternate partner as your option so I'm going to go ahead and set the
+00:17:24.599 four person rotation type here to two rotations to 11 and then the five person the one rotation to 15.
+00:17:31.980 now the five-man rotational preference means if I have say 13 players and
+00:17:37.320 that's what I'm going to show here in the demo then you know that you can't fit 13 players equally on three courts
+00:17:43.980 so what's going to happen is the system needs to know where to backfill the five-man court so if you set it to the
+00:17:51.000 bottom then you would have court one with four Court two with four and Court three with five if you set it to the top
+00:17:56.700 you would have court one with five chord two with four and Court three with four
+00:18:01.799 okay so I always give a little um reward to the top teams and always
+00:18:07.679 backfill at the bottom because people prefer to play a four man or four lady
+00:18:12.840 rotation so that's why I usually with as best practice would recommend a bottom here now the next option is really good
+00:18:21.240 for when you're setting up your leagues and you don't want people to have access you don't want people to register you
+00:18:26.340 basically just won't hit hitting it hidden while you're setting it up this is what's going to control visibility so
+00:18:33.299 this way you can control whether or not the players see it on the app so for this I'm going to go ahead and check it
+00:18:39.720 now in active players there's a concept in the league where if a player gets hurt they can you can set them to go
+00:18:47.160 inactive and basically what this is going to do is decide whether you want to show those players at the bottom or
+00:18:53.640 in the standings or if you just want to hide them completely so if you just want to hide them completely you would just uncheck that and then they wouldn't be
+00:18:59.820 seen okay now again as Ashley mentioned I know this is a lot of settings I'm covering
+00:19:05.520 I'm going to have written documentation and you'll also have this video to reflect back on if some of this stuff is
+00:19:14.400 um you know confusing or you need to go back and and rehash it out allow players to withdraw or go
+00:19:20.280 inactive that's if you want players to be able to pull themselves out I don't do this if a player needs to come out I
+00:19:27.000 like them to tell me but if you want to allow that then you would turn this option on
+00:19:32.340 and then if you want the players while they're out on the courts uh to be able to report the score which I highly
+00:19:37.679 recommend it takes a lot of uh head legwork off you as a lead coordinator you'll be able to allow players to
+00:19:45.600 report scores the only caveat to that is players and it's a good one players will
+00:19:50.640 only be able to report and edit scores for their Court only so
+00:19:56.039 they won't they'll be able to see all the other scores so if they pull out their phone on a game day during a break
+00:20:01.440 and want to look at the scores they certainly can but they wouldn't be able to change any of the scores for the
+00:20:06.900 other courts only their own okay and then if you're charging and you want to add taxes to your league registration
+00:20:14.280 this is where you're going to assign your tax rate um the one thing that we don't have here that I've already marked and we will get
+00:20:21.360 in is been able to assign a revenue category to your league Revenue so that
+00:20:27.539 you can basically map your league Revenue to a specifically category we don't have that in here right now we
+00:20:32.940 realize we missed it and we are going to be adding it okay quick question Tim on the pricing uh sometimes I have players
+00:20:40.200 who just play once or twice and they need to pay for those individual days but then I also have some players that
+00:20:46.500 sign up for the entire eight weeks is there an option to have both not at this time so what you would
+00:20:53.940 probably do is just create a you could just post a fee I guess you would have to just post a fee that's good feedback
+00:20:59.880 Kim if you're uh if you could just take notes for some of these questions that would be great so I could get them back to the development but right now we
+00:21:06.780 don't support that hybrid model we do make you choose whether you want to do
+00:21:12.600 the full price or you want to do the opt-in because most of the time if we do have somebody that's subbing in what I
+00:21:20.039 do and what a lot of clubs do is just let the subs play for free because they are just a sub
+00:21:25.559 um but again in Flex you don't really have to have Subs because the league still works if somebody can't play that
+00:21:31.559 week but great call out great question
+00:21:36.780 all right so let's talk about setting up um the league again pricing is just like
+00:21:43.980 an event I covered that earlier all this is going to feel like an event so if you guys you guys are all courses or
+00:21:49.860 customers so this is very familiar to you nothing changed here you can specify
+00:21:55.260 leagues in your league pricing at the membership type level so for your non-members you obviously can charge a
+00:22:00.600 bigger price than your regular members your premium memberships can you know play for free if you want
+00:22:06.000 um and then you can even cut off the ability for non-people non-members to get in if you want to run a member only
+00:22:11.159 league so nothing changed in regards to how you set up a league as far as um that those options compared to events
+00:22:18.179 same here with the registration start and ends works the same way the three things that we did add is the ability to
+00:22:24.600 opt in or the opt-in time frames for opting into each week so um where I have
+00:22:31.320 mindset and it seems to work well is seven days or one week prior to a game
+00:22:36.659 day players will be able to load up their app and quickly opt in or out of a
+00:22:41.700 particular leak and so that just lets the lead coordinator and let the and lets the other players know who's planning on playing for that particular
+00:22:48.299 league night and then the opt-in closes just so coordinators know or if you need to
+00:22:53.880 shift courts around if you don't get a whole lot of players then I usually you'll be able to set this but it's
+00:22:59.700 generally best practice to set this not too far out before you start but if you do want to sell that court time or or
+00:23:06.780 add it to an open Play that's running concurrently with your league you know you obviously can set this to eight
+00:23:12.240 hours if you want and just really tell your players hey if you want to play you get seven days don't try to do it last
+00:23:17.760 minute now once this opt-in time closes it closes for the players but you as an
+00:23:24.600 administrator early coordinator will obviously be able to override opt-in statuses at any time it never fails to
+00:23:30.419 happen uh every time I have a league night I'm we're all in the court warming up and I have a player that gets caught
+00:23:36.900 up at work or gets sick and can't come so I'm on the court I just pull out my app op them out regenerate the matches
+00:23:43.320 and we're off and running so this opt-in time is only relevant for players not administrators
+00:23:49.679 and then if you want to show your standings which obviously I'm thinking all of you will you want to show your
+00:23:55.679 standings publicly you have to check this box if you don't then only the standings will be shown to you which
+00:24:00.780 does does nobody really any good but we still wanted to make that a configuration option if you wanted okay
+00:24:08.340 so that is set up as far as rules we did give you a section and an editor so that
+00:24:14.159 you can come in and set up all your rules in a nice formatted way so players can read um the actual rules of the of the league
+00:24:21.120 or ladder that you're that you're presenting to them okay so I'm going to go ahead and save this and this will be
+00:24:27.539 a good time actually if we had any around this area that I'll go ahead and take so I don't have to come back to this section absolutely can we
+00:24:34.380 automatically opt to by default
+00:24:40.919 to form everybody's opted out and I would not recommending opting
+00:24:46.559 everybody in I would give some onus on them and make sure that they take the time it literally takes five seconds to
+00:24:53.520 open up the app and you're going to see this in a second the opt-in button is right there on their dashboard so all
+00:24:58.679 they have to do is just open the court Reserve app and click opt-in it takes five seconds so because if here's what's going to
+00:25:05.220 happen if you don't if you you obviously can go into the section and knocked everybody in but as soon as you do that
+00:25:12.179 then you're going to be in a scenario where you're opting out the players that didn't show up and it's much less overhead just to put the responsibility
+00:25:19.679 to the players to give them seven days to do it and just make them do it
+00:25:28.020 and in court Reserve well we need to add courts to use the league platform no it'll it'll still just allow it'll still
+00:25:34.980 it's a good question they don't have to yeah you have to I mean we both have a way to
+00:25:40.500 make that work okay yeah so um uh uh my colleague behind me said right now yes you do but we will have a
+00:25:48.179 way to not put that requirement on that very soon okay okay where are the rules
+00:25:55.500 presented to the player on their device um that's a good question
+00:26:01.740 um I don't want to tell you wrong so let me get just note who asked that and I will respond when I send the beta email
+00:26:08.460 I'll make sure I get to that person and answer that question yeah amazing day we'll get back to you
+00:26:14.820 on that one uh how do we intelligently schedule Court time for a league game day or how do how long does the league
+00:26:20.700 event run on average oh that's fantastic question um so if you do the model that I'm
+00:26:27.419 showing here okay if you do the model here and you don't go above a four or
+00:26:33.720 five person rotation if you don't get into the six and seven people rotations which I highly you know that's a lot of
+00:26:41.039 sitting for players Um this can all run within two hours so we always start at 5 30 and we are all
+00:26:48.179 the last chord is always finishing between 7 15 and 7 30. we uh have rarely
+00:26:53.820 ran over that two hour mark now with that being said we start promptly at 5 30 and we get we we give one time out
+00:27:02.520 per match as a 30 30 second maximum just to stop momentum and we try to limit the
+00:27:07.980 changeovers to um to at least a minute minute and a half and if you follow that guideline then you can easily get this
+00:27:14.940 in with two hours so I would recommend you do a two hour window for a league
+00:27:20.220 with this setup and you'll be perfectly fine now uh again it goes back to that time-based model that we're going to be
+00:27:26.520 putting in so we are going to be putting in an option where you're going to be able to say hey I want to run instead of
+00:27:32.279 it going to two rotations to 11 it'll be two rotations for 15 minutes so
+00:27:37.980 it'll be a two rotation per X time so then if you're really want to make sure
+00:27:43.740 that each player gets the same amount of time on the court and you are very in a
+00:27:48.840 time crunch and you want to you know for example run 90 minute leagues then you'll have that option in the in the
+00:27:54.419 near future last question uh when Doper is enabled what happens if the player's duper moves
+00:27:59.940 up or down with an event that's outside of the org and now it affects my rating
+00:28:05.220 inside the league platform nothing will automatically withdraw them right now so they would just not be able to
+00:28:12.240 participate in the next session If They Carried that same but we don't want to you know that's gonna happen you know
+00:28:18.179 you don't you don't necessarily want to penalize a player now I get promotion relegation and all that and we're going
+00:28:23.760 to be thinking about how to do that but I would never penalize a player until we get that in now obviously what you would
+00:28:29.220 probably want to do and what we're going to build is the ability to Auto promote them to a higher league if if you have a
+00:28:35.640 higher League running that will then match their new duper rating automatically promote them and put them
+00:28:41.100 at the bottom of the more advanced players same at the bottom if a player is getting crushed and they got a 20
+00:28:47.460 winning percentage at some point we want to be able to set a threshold to relegate that person down and put them
+00:28:54.000 at the top of the pre of the lower division so we're we're already thinking through that but right now you would
+00:29:00.539 have to handle that manually if you did want to move them out and into another League great that's all awesome all
+00:29:07.200 right so I'm going to go ahead and save this and then we'll talk about scheduling
+00:29:14.279 so now that the league is created and the sessions created now we got to tell the
+00:29:20.460 system hey when are we playing the league so this is the concept of schedules so the first thing I'm going
+00:29:25.799 to do is just click the green schedule button here and this is going to allow me just like you would an event to say
+00:29:31.559 hey when are you going to play this okay so for this one we're going to run this league we're going to do it on Saturday mornings and we're going to do a two
+00:29:38.460 hour window let's just pick 11 A.M to 1pm same as events same recurring rules this
+00:29:46.140 nothing is going to look out of the ordinary here you guys are all used to doing this so we're going to run this Saturday and let's just run it for eight
+00:29:52.679 weeks okay you obviously can end it by date now even though I generate an
+00:29:57.960 eight-week schedule you can add dates to the end you can can't you're going to run into cancellation through the rain
+00:30:03.720 if you're an outdoor club nothing is is going to prohibit you from moving around
+00:30:09.000 dates or adding dates if you want to okay and then what I'm going to do is say hey throw this on all four
+00:30:15.360 pickleball courts and then go ahead and create this schedule
+00:30:21.840 and now that I have my schedule created it's going to throw me and show me here's all of the so now I'm in the
+00:30:28.500 session okay so if I go back here to sessions you're going to see right here here is
+00:30:34.500 my Advanced coved session and if I go to view I get to the same page that I landed on so now
+00:30:40.140 when you're actually working a particular session from an administrator perspective now you're in this flow
+00:30:45.779 where here's your session all the settings I just changed here is my game day schedule and the neat thing about
+00:30:52.140 what we did here is if you are running two different schedules for the same
+00:30:58.140 session you can we can support that now you can't support this model in events
+00:31:03.840 it's coming but right now you have to set up two separate events in court Reserve if you change the time
+00:31:10.320 well within the league platform since this was brand new we didn't want to put that prohibitor in so I could actually
+00:31:16.980 create a new schedule here if I wanted to and run another date say Wednesday night from 6 to 8 PM so then I'm running
+00:31:25.919 a Saturday schedule and a Wednesday night schedule within the same league session okay so that's for those that
+00:31:34.440 clubs that want to give leagues a twice a day run you absolutely can support
+00:31:39.899 that model within this platform now again if you want to you know if you want to reschedule the day you cancel
+00:31:45.059 the day it works the same as events and then obviously you can add if you get if you uh cancel an event and you want to
+00:31:52.260 add a new one to take its place so that you get everybody gets their eight days of money's worth you can simply just add
+00:31:58.919 a new game day and Tack it on at the end okay or you can just reschedule it as
+00:32:04.080 you could an event date and Tack it on at the end either way works the same okay
+00:32:09.179 so now that we talked about creating a league creating a session creating a schedule now it's all about registration
+00:32:16.380 right so I'm going to simulate registration so I'm going to come in here here's your players tab this is
+00:32:21.659 where you're going to be on the admin side now obviously players will be able to see the league list the leagues will
+00:32:27.659 be in its own list on the member portal so there will be a new tab at the top right beside events leagues are not in
+00:32:34.080 with events they're separated so you'll have if you enable leagues and you have an active leagues then a new tab will
+00:32:40.320 pop up on the admin or the member portal up in the top nav and then also on the
+00:32:46.080 mobile app in their dashboard right under events you'll be able to see the word leagues and that's where they'll go to see the leagues and register for the
+00:32:51.720 leagues for this example I'm just going to mimic registration and register 15 or 16 players to simulate so I can
+00:32:59.580 show you the rest of the demos so if you're going to do this manually no different than what you're doing now uh
+00:33:04.919 with uh with registering so I'm gonna just throw in a couple players here
+00:33:10.740 uh sorry I really wanted to show you all this so that's why I'm taking the time so just give me a minute to
+00:33:17.159 enter all these great tennis players here uh let me go up here and enter some better names here we go see
+00:33:27.500 a couple more and we really improved this process is
+00:33:34.500 for Speed I want you to watch how fast this is so right now in events it's not when you register this amount of players
+00:33:40.500 there is a little bit of a delay but we've optimized this so that now
+00:33:45.899 when you register it's instant so now we just registered all those players and
+00:33:51.120 obviously if the league was at a cost it would have went ahead and posted that fee whatever it was to all these
+00:33:57.779 accounts okay so now we have 17 players playing in this league you can see here
+00:34:03.600 it puts the initial standings based on the registration order
+00:34:08.940 so let's talk about ranking players initially right so as soon as you get your players registered and now it's
+00:34:15.239 time to set their initial order there's three distinct options right here under ranked players
+00:34:21.599 I'll come back to manual you can seed randomly so if you want to just say hey we're going to randomly seat everybody
+00:34:27.659 you click the button and then boom everybody's seated and it's just random order okay if you want to do it by duper
+00:34:35.580 rating or your pickleball rating you would just say seed by rating and then everybody's rating that you have chosen
+00:34:41.699 for this league everybody will be rainy ranked with the rating that they have on their profile okay and then if you want
+00:34:49.080 to manually rank you just click manual and then you can move these however you
+00:34:54.179 want put Tim at the top hmm and then you can just keep moving these around until you get your order
+00:35:00.599 the way you want it and then you just see okay so you choose however you want if you're
+00:35:06.900 running an existing League goes back to that earlier question for somebody that's starting this weekend so what you
+00:35:12.000 would want to do is once you created your league go into manually Rank and put them in the same order that they
+00:35:17.220 played in for this weekend and then you'll be set to go for the remaining side the remaining weeks any questions
+00:35:23.880 on that Ashley oh let's see
+00:35:30.000 well we've got a couple questions um they're kind of long I think we should keep going and then we'll get to these okay so now that we have all the
+00:35:37.740 players and we have all of the um uh we're ready to start our game day let me
+00:35:43.740 show you how the first let me simulate us playing this first week so if I view
+00:35:49.320 the Players Once I'm in a game day you're gonna see once I click let me go
+00:35:54.420 back I'll cover that a little quickly so now you see I'm in my session and if I want to work or coordinate or manage the
+00:36:02.280 upcoming game day I'm going to click this view button right here on the week that I want to manage so once I do that
+00:36:09.660 I'm going to go into a new section that's going to show me all of the players and their opt-in status so you can see
+00:36:17.040 by default each week everybody's out okay now as players opt in there this
+00:36:24.420 the the button will turn green okay so if I was to hop in over onto to to the
+00:36:30.000 mobile side and I refresh this I'm going to see
+00:36:36.900 here's the lead that I just entered and so again it's on the dashboard right so once it's on the dashboard and the
+00:36:43.140 opt-ins open all they have to do is just click opt-in and they're in so if I go back over here to my league now and I
+00:36:49.079 refresh Tim's in so this is that's how easy and simple it is on the player side
+00:36:54.780 and if they want to opt out then all they have to do is Click opt out and it just opts them out
+00:37:00.060 so now if I refresh you'll see that Tim is out so they they can do that during that seven day period or seven day
+00:37:06.599 window that you've given them okay so I'm going to just simulate
+00:37:12.180 let's see 13 players so it's going to show you how many if you just look up at the top it'll show you how many players
+00:37:17.820 have opted in and we're just going to go through here and opt in up to 13.
+00:37:25.800 okay so now 13 players are in you're ready to start the day okay you're there
+00:37:32.579 you're at the courts um so let's go through what that process will look like so now that the lead
+00:37:37.619 coordinators out there or the front desk person whoever's doing or coordinating this league there's a couple steps you
+00:37:43.260 have to walk through to get the groups created and get the matches out on the court okay so the first thing is to lock
+00:37:48.900 the opt-ins now what we do is based on that time frame if I've got it set to
+00:37:54.540 two hours before the game day and my game day starts at 7 p.m at 5 p.m the players can
+00:38:00.540 no longer opt in but you can still opt in and out as long as you want until you click this lock in lock opt-in button so
+00:38:07.680 if I click this lock in button that basically says hey we're starting we got the players they're locked in so now
+00:38:13.740 that the players are are started I mean now need to create the groups and the groups are the courts right so if I
+00:38:20.640 click create groups now it's going to take those 13 players based on our rules
+00:38:26.099 based on the ratings and allocate them to the correct court and create correct
+00:38:31.320 rotational schedule so you can see I got my top four players and it's all based on ranking right so you can see the
+00:38:37.440 number eight player is not here so the number 10 got elevated to court two because the number eight was not here so
+00:38:44.940 it's always going to allocate from bottom to top and then put your five quart five player courts that it has to
+00:38:52.140 create at the bottom because that's where I told the system to put them okay right so now we have our R groups so now
+00:39:00.240 we have to create or start the game day and when we start the game day that's what actually creates the matches and
+00:39:07.020 allows for score entry okay so as an administrator I can come in here and I
+00:39:12.480 can see all the scores all right and I can and I'll show you in a minute how because I'm going to edit all these scores and put them in in a
+00:39:18.660 second so we can finalize the game day but as an administrator you have full you know you can come in here hit edit
+00:39:24.119 scores and then go on your way but again you want your players to do this to take this off of you so if I was to jump back
+00:39:31.200 into the mobile app and I was to click on this league if you click on the left side it's going to
+00:39:37.140 take me in and it's going to take me right to the game day okay now and we're going to fix this so it goes
+00:39:44.040 right to my matches the first there's if you look this is our new design of our mobile app and so you can see it's going
+00:39:50.460 to default me to be the game day that's current now as a player I can scroll up and I can see all the players that are playing
+00:39:56.940 so I have 13 that have opted in so I know that there's 13 guys that are playing or 13 ladies that are playing
+00:40:02.640 with us and I can see four players did not then now if I click on my matches that's going to take me to my court and
+00:40:10.980 my match right so the only thing that we need to add here um well we do have it here we did add it
+00:40:18.359 but it's not on every card but at the very top we'll tell them which court to report to and what their rotational type
+00:40:25.020 looks like so if a player says hey am I playing one game to 15 or am I playing the 11 the my matches will tell them
+00:40:31.560 court and how many rotations to play and plus they can just look at the scorecards and see where they're
+00:40:37.920 supposed to play and who they're supposed to play with and who they're supposed to play against and then it's all about easy entry so if I Me and Bobby here if
+00:40:46.200 we play our match we click enter score the little drawer will pop up we enter our score right on our phones submit
+00:40:52.619 results get back on the court play the next match okay super easy interface to enter scores now
+00:40:59.339 if I go over to all matches I can enter I can see all the matches here but look what happens as soon as I get off my
+00:41:06.599 court I don't see an underscore button so I cannot enter scores for other matches now I can also until and up
+00:41:15.420 until the coordinator has finalized the game day if if Andy comes up and says
+00:41:21.660 hey we actually scored five that match I can simply just go back in and change the score so I can simply come back in
+00:41:27.480 here and change this to um well it doesn't seem to be working in this in this emulator so let me see if I
+00:41:33.839 can do it from my matches if I click edit score here
+00:41:39.119 nope so we'll have to look at that so it's fine so uh so normally you can edit
+00:41:45.960 scores there uh it's just probably the emulator is not letting me enter them right there so you can change the score up anytime you want and until they're
+00:41:52.980 finalized what I normally do is have somebody enter the scores and have somebody else
+00:41:58.200 verifying scores so they're just looking either over their shoulder or they're pulling out their own phone making sure somebody from the other team's making
+00:42:04.320 sure the score is correct okay I saw some questions popping up Ashley do you want me to stop here and answer any
+00:42:10.320 because we're almost done uh okay here we go
+00:42:18.119 for example Court Reserve assigns a player the number one spot meaning they play the first four games and set the
+00:42:23.220 fifth some people want to break in between and prefer to play two break and then play the last two
+00:42:29.400 yeah I mean just because the system has it lined up a certain way you obviously
+00:42:35.280 your players can work out whatever rotation is best for them as long as they play all the games and that the the
+00:42:41.520 system is telling them to play we give them and whatever they can plan man but if you guys have some type of concept
+00:42:47.160 where you want to break that order and play them in a different order to give somebody a break then absolutely do that now there is no breaks in four man
+00:42:53.640 rotations because everybody's on the court now in the five-man rotation it's going to tell you who has the buy so
+00:43:00.300 each in a five minute rotation somebody has to see it so that that that's the
+00:43:05.400 only thing that that I can recommend in that scenario because if you're in a four quart rotation there is no brakes
+00:43:11.700 so can we limit the number of times a person can opt in so we don't want
+00:43:17.220 people to have opt-in every week we want to limit them to the number of opt-ins they can have over a number of weeks not
+00:43:24.839 a current option and personally that's not a you know that's you know people are paying for the
+00:43:31.260 league they're going to be I guess that's a capacity issue and I get it so
+00:43:36.300 Kim just marked that as a feedback item that we can discuss currently the answer is no that's not a
+00:43:41.880 that's not a feature that we provide at this time can you create matches from the mobile app you can do all of this from the mobile
+00:43:48.180 app on the admin side that whole process that I walked through creating the groups creating the Locking
+00:43:54.359 to all that is easily done on the admin mobile app in the league sessions be variable size
+00:44:00.480 for opt-ins meaning one session series is for four players another for eight or for twelve or other for 16 or 20. we
+00:44:07.560 would modify the size based on demand and court availability absolutely this it's all that that Max registrant is not
+00:44:13.980 at the league level it's at the session level so if you want to run a session your first session and say you you only
+00:44:19.800 get you did 25 but only 14 show up then the next session you can change the max registrants to 16.
+00:44:26.400 can I add my club logo to the score sheet not right now but that that is uh that
+00:44:33.180 logo I guess um right there at the score sheet it does hide the header so we can we can
+00:44:39.119 obviously yeah this is great feedback guys anything you have we're willing to to hear so just write that one down as
+00:44:44.339 well can
+00:44:49.980 you count on the court with them uh great question we do have a print option you can see it here so this will print
+00:44:56.400 out the score cards but currently this is not available on the player side um and the reason is is that like I said
+00:45:02.460 that nine times out of ten there is a person that doesn't show up or people that don't show up or a person shows up
+00:45:08.940 and didn't opt in so when I was printing these cards before I had the ability to actually allow the players to enter them
+00:45:15.839 in the mobile app this was a major headache because I'd have to go back or I was already at the courts and couldn't
+00:45:21.780 print them so you can certainly do that from the administrator side but it's not available on the on the player side at
+00:45:27.420 this time last question do four player and five player courts play the same number of games
+00:45:33.060 they can't um they play this they they they can't because of the rotation so a five player
+00:45:39.480 Court that's why on the five player Court you go to 15 and on the four player Court you go to 11. so that is
+00:45:47.040 the closest permutation to getting this to as close as possible so with the four
+00:45:52.380 player Court your total points will be 66 points so you'll play you got a total
+00:45:57.660 you got the opportunity to win 66 points and a five player rotation you have the
+00:46:02.819 opportunity to win 60 points because the games go to 15 not 11. so that's as
+00:46:07.920 close as we could get them and it also from a Time perspective equals out
+00:46:14.579 all right let's rock awesome awesome so I'm gonna go ahead and finish out the score entry so I can uh go ahead and
+00:46:21.480 show you finalization so I'm just going to go in here and enter all the scores here
+00:46:33.440 make that a close game make this a blowout oh see that was a good test so basically
+00:46:40.440 it will not let you put in a a bad score
+00:46:46.200 right
+00:46:51.780 and then obviously it knows when you're playing the 15 so he'll make you it
+00:46:57.420 won't it it's intelligent enough to know where the scoring is going to like how much
+00:47:06.480 and last week okay and this update's in real time so
+00:47:13.920 basically if I was to go here and refresh the mobile app uh then all the
+00:47:19.020 scores obviously are going to be here under all matches and they can you say so as the game day is progressing
+00:47:24.720 they'll be able to scroll and see how everybody or somebody's at home and couldn't play I do that all the time if I can't make it if I'm out of town I'll
+00:47:30.720 I'll I'll check it out in real time and see how the scores are going um so now that all the scores are
+00:47:36.599 entered now obviously if somebody uh messes up you can come in here and edit a score at any time edit just one score
+00:47:42.800 and click save and that will change the score so now that the game day is finished
+00:47:49.140 right it has to go through a final finalization process and that has to be
+00:47:54.359 done by a lead coordinator right now because I know this question is going to get asked this managing
+00:48:01.560 leagues is not a sub admin or player some permission at this time
+00:48:06.960 what we're working on is the ability to add a league manager as a sub admin
+00:48:12.660 permission but we also are going to take it A step above and allow you to elevate
+00:48:17.700 a player for a given week to coordinate so that way if the lead coordinator
+00:48:23.520 can't make it to do the opt-in and opt outs for the no shows a player can do
+00:48:29.339 that so that is coming but right now you have to have admin access to get to this
+00:48:36.119 part of the league platform on the admin side okay so now what that person would have to do
+00:48:42.420 is once all scores are in and everybody feels good about it they simply finish the game day
+00:48:47.579 and what this does finalizes processes all the rankings and boom updates your
+00:48:53.400 standings okay so now this is all your standings now what I
+00:48:59.099 wanted to show you here is that remember I put in that Max 4 movement so as you
+00:49:06.000 can see that's gone into effect once we get to Toby so here Mr Mourinho he is
+00:49:12.060 above everybody but he started at number 10 so he is
+00:49:17.339 only able to go to Six okay and Andy here didn't play or didn't
+00:49:24.240 win any games he played but didn't when no he didn't play so he he uh he dropped down so if you're inactive you can't go
+00:49:31.740 up but you can move down okay so if people jump you based on percentage and
+00:49:37.140 you didn't play then you will get jumped okay and then Rafa here he had a 53
+00:49:45.540 and he did not move he moved as far down as he could go minus four and that's why
+00:49:52.319 alfano here couldn't jump over him because copano couldn't get more he's only up to three so it's the max
+00:49:59.700 movement really restricts that up and down now if you had that turned off then
+00:50:05.040 right here Mr alfano would have been sitting at the very top of the ladder so he would have moved all the way down off
+00:50:11.160 that bottom court all the way to number one so that's where you got to really look at your demographic of players and
+00:50:17.940 the skill level to determine which algorithm and if that match movement is going to make sense for you okay now the
+00:50:24.060 standings here this is what the percentage is based on so it's the division of points one divided by points
+00:50:30.180 played it will show you your total games it's going to show your total game wins your total game losses your game win
+00:50:35.579 percentage which has no bearing on ranking and then your performance over your last six games
+00:50:41.220 okay now the question is oh my word
+00:50:46.640 I Bobby here we messed this up so they came to you hey Andy and Mike Brian
+00:50:54.660 actually won 11-4 and you're like oh no this is going to mess up we got you
+00:50:59.819 covered so in this scenario we have a reversion process in place so if you
+00:51:06.240 need to correct the score for a week that has been finalized you simply have
+00:51:12.059 to revert it guess what that's going to do that's going to set everything back to the way
+00:51:17.760 it was for the pre from the previous week since so we hadn't started so that revert has just reverted everything but
+00:51:24.900 it didn't revert the matches so now I can simply go in here edit the score
+00:51:29.940 change uh Tim and Bobby to four and change Eddie Andy and Mike
+00:51:36.720 and save it and then finish the game day so now I've recorrected the entire week
+00:51:43.680 in a matter of about 15 seconds Okay so any questions on scoring score entry or
+00:51:51.240 standings
+00:51:57.319 I was reading through some of the questions um if you run out of time can you enter a score of less than 15 so the final
+00:52:04.380 score ends up being like eight to six for example not right now that's the that is you can Mark a match incomplete
+00:52:12.180 but it will not count if you do that so during that that scoring entry there was
+00:52:17.880 a check box there that that you can choose to say hey I want to mark this incomplete so so the way it so that way
+00:52:25.440 if you do want to um I'm glad that's a great question so like for example if a storm Brews and
+00:52:32.579 you're on the last game of a you don't want to penalize everybody if they got five of their six games in right so you
+00:52:39.420 would more you would go eight six and Mark and complete Nick does it count the score of an incomplete match at all or
+00:52:45.359 okay it does it count that match at all so right now maybe that's a feedback
+00:52:50.579 item I'd love to get your feedback on so we maybe could put an option to say if a game is incomplete still count it
+00:52:57.839 towards the total points won and lost but right now it would just throw that match out as if it didn't exist and only
+00:53:04.500 count the five scores that it did have and so would you do the same kind of thing if somebody got injured then
+00:53:10.859 correct same kind of thing so in the injury situation everybody on
+00:53:16.980 that Court you know after the injury all those matches would have to go in as incomplete
+00:53:23.400 all right and can you penalize a ranking for not playing dormant players sit at the top can a dormant player sit
+00:53:29.880 at the top without playing yeah we don't have the penalty points do we no we are working we had that in
+00:53:37.440 phase one and we took it out so what we did because the complexity it was introducing but what we want to do is
+00:53:42.900 get it back in and so what the question was was to say hey if a player doesn't play can you and can you move them
+00:53:51.540 or penalize them a certain percentage points and so we're still working through how we want that to work but
+00:53:57.119 currently right now they would sit now if they don't play naturally they just
+00:54:02.460 keep dropping because the other is unless here's the scenario where they wouldn't if they established a very high
+00:54:09.000 percentage and then just didn't play they stay there until you manually either move them down or make them
+00:54:15.540 inactive and so that happened to me I had a player that played in a bunch of tournaments and he was one of our best
+00:54:20.640 players and he had a span of like five weeks in a row where he was in tournament play so I just made him
+00:54:25.800 inactive and then put him manually back when he came back to where you know a couple spots down than where he was when
+00:54:31.740 he left and then another question can finalize scores be edited for any week rather
+00:54:37.680 than just the previous week no because the reversion process will only go back one week
+00:54:43.980 it's too complicated because to think about it if you noticed an error in week two and you're only in week seven that
+00:54:50.460 would have to re I would have to walk through six weeks of reversions and then six more weeks and it was just too much
+00:54:57.720 um I had not ran into that problem so you just got to be very careful but right now you can only revert back one week
+00:55:05.180 one week at a time yeah all right and then two questions surrounding payments
+00:55:10.680 and having people sign up if we're having people sign up for all sessions and pay how do you allow people to sign
+00:55:16.680 up as subs and not have to pay for all the sessions right now that would have to just be an override so right now you
+00:55:23.460 somebody asked that last week too you would have to just put them in and register them and just override their
+00:55:28.680 price to zero they won't be able to do it on the registration themselves
+00:55:34.260 all right and then last question are we planning on having any educational videos for players on how to use the
+00:55:39.480 system yeah I'm gonna do I'm not going to probably do a video um maybe we will maybe we will shouldn't
+00:55:45.300 say that but the the quickest thing that I can get is get you a very good written
+00:55:50.940 document because this is going to be pretty much the same flow for every Club this is not very you know in terms of
+00:55:57.420 customization the the the the the opting in the entering of the scores the
+00:56:03.180 viewing of the matches and the viewing of the players that are playing are really the same across our entire portfolio of clubs so I'm going to do
+00:56:10.200 screenshots and do call outs and get you that information early next week
+00:56:16.260 okay well that's all we had as far as questions go awesome um and I did forget one thing I wanted to show you before I
+00:56:22.740 let you go uh and it's a great way to wrap up I got three minutes to go um all of this does exist on your
+00:56:30.119 schedulers so anytime that you want to view and see the leagues on your court sheets obviously they will be there
+00:56:37.980 this we we probably will change because this could be somewhat misleading this
+00:56:43.920 is not the number of registrants it's the number of people that are registered for that game day it's the opt-in
+00:56:51.119 players so when you see 13 here you notice I have 20 plus in my league but I
+00:56:57.480 have 13 planned on this Saturday so if I was to jump over to next Saturday obviously it's going to say zero because
+00:57:03.960 nobody's opted in so uh we're still figuring out the best thing to call it
+00:57:10.079 like you know 13 opt-ins or whatever um but right now that hasn't been
+00:57:15.359 changed so I didn't want anybody to get confused thinking they registered players they go look at the scheduler
+00:57:20.579 and they're like the registry's not showing up but that's because they're not opted in so if I go back here
+00:57:26.579 back to June 24th and I click on this then you're gonna
+00:57:32.280 see these are the the player status and if this if this was if this opt-in was
+00:57:39.119 not locked you can even opt in players from this screen as well and then you can also see all your groups all your
+00:57:44.579 matches do everything you can't edit scores from this pop-up you have to go in the league but everything else you can do right from the scheduler
+00:57:51.660 and with that that is leagues so I hope you like this I hope this was
+00:57:56.819 informative I hope this will help you get started next week again we'll have um try to have a video to you we'll have
+00:58:03.780 this one for sure up on our uh somewhere where we can allow you to access it and
+00:58:09.059 then we will write some written a written user guide that will walk you through some of the things I showed you
+00:58:14.400 today thanks everybody

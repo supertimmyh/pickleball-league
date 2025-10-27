@@ -69,11 +69,19 @@ app = Flask(__name__, static_folder=str(BASE_DIR / 'static'))
 def read_file_from_gcs(bucket_name, file_path):
     """Read a file from Google Cloud Storage."""
     try:
+        if storage_client is None:
+            print(f"ERROR: storage_client is None - GCS not initialized")
+            return None
+
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(file_path)
-        return blob.download_as_string()
+        content = blob.download_as_string()
+        print(f"✓ Successfully read {file_path} from gs://{bucket_name}/{file_path}")
+        return content
     except Exception as e:
-        print(f"Error reading {file_path} from GCS: {e}")
+        print(f"ERROR reading {file_path} from gs://{bucket_name}/{file_path}: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
@@ -265,8 +273,11 @@ def serve_static(path):
     """Serve static files from local filesystem or GCS."""
     if USE_GCS:
         # Serve from GCS
-        file_data = read_file_from_gcs(GCS_CONFIG_BUCKET, f'static/{path}')
+        gcs_path = f'static/{path}'
+        print(f"Serving static file from GCS: gs://{GCS_CONFIG_BUCKET}/{gcs_path}")
+        file_data = read_file_from_gcs(GCS_CONFIG_BUCKET, gcs_path)
         if file_data is None:
+            print(f"ERROR: Static file not found - gs://{GCS_CONFIG_BUCKET}/{gcs_path}")
             return jsonify({"error": "Static file not found"}), 404
 
         # Determine content type based on file extension
@@ -275,10 +286,68 @@ def serve_static(path):
         if content_type is None:
             content_type = 'application/octet-stream'
 
+        print(f"✓ Returning static file with content-type: {content_type}")
         return file_data, 200, {'Content-Type': content_type}
     else:
         # Serve from local filesystem
         return send_from_directory(app.static_folder, path)
+
+
+@app.route('/api/debug-gcs', methods=['GET'])
+def api_debug_gcs():
+    """Debug endpoint to test GCS connectivity and file access.
+
+    This endpoint helps diagnose issues with static file serving from GCS.
+    Remove in production.
+    """
+    debug_info = {
+        "use_gcs": USE_GCS,
+        "gcs_config_bucket": GCS_CONFIG_BUCKET,
+        "gcs_matches_bucket": GCS_MATCHES_BUCKET,
+        "storage_client_initialized": storage_client is not None,
+        "tests": {}
+    }
+
+    # Test 1: storage_client status
+    if storage_client is None:
+        debug_info["tests"]["storage_client"] = "ERROR: storage_client is None"
+    else:
+        debug_info["tests"]["storage_client"] = "OK: storage_client initialized"
+
+    # Test 2: Try to list static files
+    try:
+        if storage_client is not None:
+            bucket = storage_client.bucket(GCS_CONFIG_BUCKET)
+            blobs = list(bucket.list_blobs(prefix='static/'))
+            debug_info["tests"]["list_static_files"] = {
+                "status": "OK",
+                "file_count": len(blobs),
+                "files": [blob.name for blob in blobs[:10]]  # First 10
+            }
+        else:
+            debug_info["tests"]["list_static_files"] = "ERROR: storage_client is None"
+    except Exception as e:
+        debug_info["tests"]["list_static_files"] = f"ERROR: {type(e).__name__}: {e}"
+
+    # Test 3: Try to read logo file
+    try:
+        logo_data = read_file_from_gcs(GCS_CONFIG_BUCKET, 'static/picktopia_logo.png')
+        if logo_data is not None:
+            debug_info["tests"]["read_logo"] = {
+                "status": "OK",
+                "file_size_bytes": len(logo_data)
+            }
+        else:
+            debug_info["tests"]["read_logo"] = "ERROR: read_file_from_gcs returned None"
+    except Exception as e:
+        debug_info["tests"]["read_logo"] = f"ERROR: {type(e).__name__}: {e}"
+
+    print("\n=== GCS DEBUG INFO ===")
+    import json
+    print(json.dumps(debug_info, indent=2))
+    print("=== END DEBUG INFO ===\n")
+
+    return jsonify(debug_info), 200
 
 
 @app.route('/api/regenerate-rankings', methods=['POST'])

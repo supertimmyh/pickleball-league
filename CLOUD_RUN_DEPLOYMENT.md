@@ -1,19 +1,74 @@
 # Google Cloud Run Deployment Guide
 
-**Last Updated:** October 23, 2025
-**Status:** Ready for Deployment
+**Last Updated:** October 26, 2025
+**Status:** Consolidated Guide
 **Target Platform:** Google Cloud Run + Google Cloud Storage
 
 ---
 
-## 📋 Quick Start
+## 🎯 Overview
 
-### Prerequisites
+This guide provides comprehensive instructions for deploying the Pickleball League application to Google Cloud Run, using Google Cloud Storage for data persistence. It covers everything from initial setup to deployment, verification, and maintenance.
 
-1. **Google Cloud Account** - Active account with billing enabled
-2. **gcloud CLI** - Install from https://cloud.google.com/sdk/docs/install
-3. **Docker** (optional) - For local testing before deployment
-4. **Git** - For version control
+The application is designed with a dual-backend architecture, allowing it to run in two modes:
+-   **Local Mode (default):** Uses the local filesystem for all data.
+-   **Cloud Mode (`USE_GCS=true`):** Uses Google Cloud Storage for data.
+
+This guide focuses on deploying the application in **Cloud Mode**.
+
+---
+
+## 🏗️ Architecture
+
+### Before (Local)
+```
+┌─────────────────┐
+│  Flask Server   │
+│  (Port 8000)    │
+└────────┬────────┘
+         │
+    ┌────▼─────────────────────┐
+    │  Local Filesystem        │
+    │ - matches/singles/       │
+    │ - matches/doubles/       │
+    │ - players.csv            │
+    │ - rankings.json          │
+    │ - index.html             │
+    └──────────────────────────┘
+```
+
+### After (Cloud Ready)
+```
+┌─────────────────────────┐
+│  Cloud Run Service      │
+│  (Serverless)           │
+└────────┬────────────────┘
+         │
+    ┌────▼────────────────────────────────┐
+    │  Google Cloud Storage               │
+    │  ┌──────────────────────────────┐   │
+    │  │ pickleball-matches-data      │   │
+    │  │ - singles/                   │   │
+    │  │ - doubles/                   │   │
+    │  └──────────────────────────────┘   │
+    │  ┌──────────────────────────────┐   │
+    │  │ pickleball-config-data       │   │
+    │  │ - players.csv                │   │
+    │  │ - config.json                │   │
+    │  │ - rankings.json              │   │
+    │  │ - index.html                 │   │
+    │  └──────────────────────────────┘   │
+    └─────────────────────────────────────┘
+```
+
+---
+
+## 📋 Prerequisites
+
+1.  **Google Cloud Account:** An active account with billing enabled.
+2.  **gcloud CLI:** The Google Cloud command-line interface. Install from [here](https://cloud.google.com/sdk/docs/install).
+3.  **Docker:** (Optional) For building and testing container images locally.
+4.  **Git:** For version control.
 
 ### Verify Prerequisites
 
@@ -32,17 +87,19 @@ git --version
 
 ## 🚀 Deployment Steps
 
+This section provides a complete walkthrough from project setup to a running application on Cloud Run.
+
 ### Step 1: Create Google Cloud Project (5 mins)
 
 ```bash
 # Set your desired project ID and name
-PROJECT_ID="pickleball-league-prod"
+export PROJECT_ID="pickleball-league-prod"
 PROJECT_NAME="Pickleball League"
 
 # Create the project
 gcloud projects create $PROJECT_ID --name="$PROJECT_NAME"
 
-# Set it as default
+# Set it as default for gcloud
 gcloud config set project $PROJECT_ID
 
 # Verify
@@ -52,23 +109,16 @@ gcloud config get-value project
 ### Step 2: Enable Required APIs (3 mins)
 
 ```bash
-# Enable Cloud Run API
-gcloud services enable run.googleapis.com
-
-# Enable Container Registry API
-gcloud services enable containerregistry.googleapis.com
-
-# Enable Cloud Build API
-gcloud services enable cloudbuild.googleapis.com
-
-# Enable Cloud Storage API
-gcloud services enable storage-api.googleapis.com
+# Enable APIs for Cloud Run, Container Registry, Cloud Build, and Cloud Storage
+gcloud services enable run.googleapis.com containerregistry.googleapis.com cloudbuild.googleapis.com storage-api.googleapis.com
 
 # Verify all APIs are enabled
 gcloud services list --enabled | grep -E "(run|container|build|storage)"
 ```
 
 ### Step 3: Create Cloud Storage Buckets (2 mins)
+
+Two buckets are needed for your application\'s data and configuration:
 
 ```bash
 # Create matches data bucket
@@ -83,10 +133,11 @@ gsutil ls
 
 ### Step 4: Create Service Account (3 mins)
 
+A dedicated service account for the application is recommended for security.
+
 ```bash
 # Create service account
-gcloud iam service-accounts create pickleball-app \
-  --display-name="Pickleball League Application"
+gcloud iam service-accounts create pickleball-app --display-name="Pickleball League Application"
 
 # Grant Cloud Storage permissions
 gcloud projects add-iam-policy-binding $PROJECT_ID \
@@ -104,18 +155,21 @@ gcloud iam service-accounts list
 
 ### Step 5: Upload Initial Data to Cloud Storage (2 mins)
 
+You\'ll need to upload your existing data to the newly created buckets.
+
 ```bash
-# Navigate to project directory
+# Navigate to your local project directory
 cd /path/to/pickleball-league
 
-# Upload matches (if any existing matches)
+# Upload matches (if any exist)
 gsutil -m cp -r matches/* gs://pickleball-matches-data/
 
-# Upload configuration files
+# Upload configuration and static files
 gsutil cp players.csv gs://pickleball-config-data/
 gsutil cp config.json gs://pickleball-config-data/
 gsutil cp rankings.json gs://pickleball-config-data/
 gsutil cp index.html gs://pickleball-config-data/
+gsutil -m cp -r static/* gs://pickleball-config-data/static/
 
 # Verify uploads
 gsutil ls gs://pickleball-matches-data/
@@ -124,7 +178,11 @@ gsutil ls gs://pickleball-config-data/
 
 ### Step 6: Deploy to Cloud Run (5-10 mins)
 
-#### Option A: Direct Deployment (Recommended for first deployment)
+You can deploy using the command line or the web interface.
+
+#### Option A: Direct Deployment via Command Line (Recommended)
+
+This command builds and deploys your application in one step.
 
 ```bash
 # Build and deploy in one command
@@ -138,109 +196,70 @@ gcloud run deploy pickleball-app \
   --service-account=pickleball-app@$PROJECT_ID.iam.gserviceaccount.com \
   --allow-unauthenticated \
   --set-env-vars=USE_GCS=true,GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GCS_MATCHES_BUCKET=pickleball-matches-data,GCS_CONFIG_BUCKET=pickleball-config-data
-
-# You'll be prompted to create a Cloud Build service account - allow it
 ```
 
-#### Option B: Using Cloud Build (For CI/CD)
+#### Option B: Deployment via Web Interface
 
-```bash
-# Connect Cloud Build to your repository
-gcloud builds connect --region=us-central1
+1.  **Navigate to Cloud Run:**
+    *   Open the [Google Cloud Console](https://console.cloud.google.com).
+    *   In the navigation menu, select **Cloud Run**.
 
-# Manually trigger a build
-gcloud builds submit --config cloudbuild.yaml
-```
+2.  **Create Service:**
+    *   Click the **Create Service** button.
+    *   Select **Cloud Run (fully managed)**.
 
-### Step 7: Verify Deployment (5 mins)
+3.  **Source:**
+    *   Select **Continuously deploy new revisions from a source repository**.
+    *   Click **Set up with Cloud Build**, connect your repository, and select the branch (e.g., `main`).
+    *   Ensure the "Build Type" is set to use the `Dockerfile` in your repository.
+    *   Click **Save**.
+
+4.  **Service Settings:**
+    *   **Service name:** `pickleball-app`
+    *   **Region:** `us-central1`
+
+5.  **Authentication:**
+    *   Select **Allow unauthenticated invocations**.
+
+6.  **Container(s), volumes, networking, security:**
+    *   Expand this section.
+    *   **Container** tab: Set Memory to `512Mi`, CPU to `1`, and Concurrency to `50`.
+    *   **Variables & Secrets** tab: Add the environment variables listed in the **Configuration** section below.
+    *   **Security** tab: Select the `pickleball-app` service account.
+
+7.  **Deploy:**
+    *   Click the **Create** button.
+
+---
+
+## 🧪 Post-Deployment Verification
+
+After deployment, test the application to ensure it\'s working correctly.
 
 ```bash
 # Get the service URL
-gcloud run services describe pickleball-app --region=us-central1
-
-# Test the application
-SERVICE_URL=$(gcloud run services describe pickleball-app \
-  --region=us-central1 --format='value(status.url)')
-
+SERVICE_URL=$(gcloud run services describe pickleball-app --region=us-central1 --format='value(status.url)')
 echo "Service URL: $SERVICE_URL"
 
 # Test endpoints
 curl $SERVICE_URL/
 curl $SERVICE_URL/api/players
 curl $SERVICE_URL/record
-```
 
----
-
-## 🧪 Testing After Deployment
-
-### 1. Test Rankings Page
-
-```bash
-# Visit in browser or curl
-curl https://pickleball-app-xxxxx.run.app/
-
-# Should return HTML with rankings
-```
-
-### 2. Test Match Form
-
-```bash
-curl https://pickleball-app-xxxxx.run.app/record
-
-# Should return match form HTML
-```
-
-### 3. Test Players API
-
-```bash
-curl https://pickleball-app-xxxxx.run.app/api/players
-
-# Should return JSON list of players from Cloud Storage
-```
-
-### 4. Test Match Submission
-
-```bash
-curl -X POST https://pickleball-app-xxxxx.run.app/api/matches \
+# Test match submission
+curl -X POST $SERVICE_URL/api/matches \
   -H "Content-Type: application/json" \
-  -d '{
+  -d \
+'{
     "type": "singles",
-    "date": "2025-10-23",
+    "date": "2025-10-26",
     "players": ["Alice Johnson", "Bob Smith"],
-    "games": [
-      {"player1_score": 11, "player2_score": 7},
-      {"player1_score": 9, "player2_score": 11},
-      {"player1_score": 11, "player2_score": 5}
-    ],
+    "games": [{"player1_score": 11, "player2_score": 7}],
     "winner": "Alice Johnson"
   }'
 
-# Should return success message
-```
-
-### 5. Verify Data in Cloud Storage
-
-```bash
-# Check new match file was created
+# Verify data in Cloud Storage
 gsutil ls gs://pickleball-matches-data/singles/
-
-# Check rankings were updated
-gsutil cat gs://pickleball-config-data/rankings.json | head -20
-
-# Download and view the generated HTML
-gsutil cp gs://pickleball-config-data/index.html /tmp/index.html
-open /tmp/index.html  # On macOS
-```
-
-### 6. Check Cloud Run Logs
-
-```bash
-# View recent logs
-gcloud run logs read pickleball-app --limit=50 --region=us-central1
-
-# Stream logs in real-time
-gcloud run logs read pickleball-app --region=us-central1 --follow
 ```
 
 ---
@@ -249,419 +268,103 @@ gcloud run logs read pickleball-app --region=us-central1 --follow
 
 ### Environment Variables
 
-The following environment variables are available:
+These are critical for running the application in Cloud Mode.
 
 | Variable | Default | Purpose |
-|----------|---------|---------|
-| `USE_GCS` | `false` | Enable/disable Cloud Storage backend |
-| `GOOGLE_CLOUD_PROJECT` | None | GCP project ID |
-| `GCS_MATCHES_BUCKET` | `pickleball-matches-data` | Bucket for match YAML files |
-| `GCS_CONFIG_BUCKET` | `pickleball-config-data` | Bucket for config files |
-| `PORT` | `8080` | Server port (set by Cloud Run) |
-| `FLASK_ENV` | `production` | Flask environment |
-
-### Update Environment Variables
-
-```bash
-gcloud run services update pickleball-app \
-  --update-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
-  --region=us-central1
-```
-
-### View Current Configuration
-
-```bash
-gcloud run services describe pickleball-app --region=us-central1
-```
+|---|---|---|
+| `USE_GCS` | `false` | Must be `true` to enable Cloud Storage backend. |
+| `GOOGLE_CLOUD_PROJECT`| None | Your GCP project ID. |
+| `GCS_MATCHES_BUCKET`| `pickleball-matches-data` | Bucket for match YAML files. |
+| `GCS_CONFIG_BUCKET` | `pickleball-config-data` | Bucket for config and static files. |
+| `PORT` | `8080` | Server port (set automatically by Cloud Run). |
+| `FLASK_ENV` | `production` | Flask environment. |
 
 ---
 
-## 🔒 Security Considerations
+## 📝 Code Changes for Cloud Migration
 
-### Current Setup
-- ✅ Service account with minimal permissions (Cloud Storage only)
-- ✅ Data encrypted at rest and in transit
-- ✅ HTTPS enforced by Cloud Run
-- ✅ Public endpoint (good for league members)
+This section details the modifications made to the codebase to support Google Cloud.
 
-### To Add Authentication
-If you want to restrict access to match submission:
+### 1. **server.py** - Flask Backend
+-   Added Google Cloud Storage client initialization.
+-   Added `read_file_from_gcs()` and `write_file_to_gcs()` helper functions.
+-   Updated all file I/O operations to use these helpers when `USE_GCS` is true.
+-   Added `PORT` environment variable support for Cloud Run.
 
-```bash
-# Remove --allow-unauthenticated
-gcloud run deploy pickleball-app \
-  --no-allow-unauthenticated \
-  --region=us-central1
+### 2. **scripts/generate_rankings.py** - Ranking Generator
+-   Added GCS support to the `RankingsGenerator` class.
+-   The script now lists, reads, and writes files to/from GCS buckets when `USE_GCS` is true.
 
-# Users will need Google Cloud authentication to access
-```
+### 3. **scripts/build_pages.py** - HTML Generator
+-   Updated to read `config.json` from GCS and write the generated `index.html` to GCS when `USE_GCS` is true.
 
----
+### 4. **requirements-server.txt** - Dependencies
+-   Added `google-cloud-storage>=2.10.0` and `gunicorn>=21.0.0`.
 
-## 💰 Cost Optimization
-
-### Current Configuration
-- **Memory:** 512Mi (suitable for this app)
-- **CPU:** 1
-- **Min instances:** 0 (auto-scales, saves cost)
-- **Max instances:** 10
-
-### Estimated Costs
-
-```
-Cloud Run:
-  - ~$0.0000667 per CPU-second
-  - ~$0.0000042 per memory-GB-second
-  - Free tier: 2M invocations/month, 360,000 GB-seconds/month
-
-Cloud Storage:
-  - ~$0.023/GB/month for storage
-  - $0.005 per 10,000 write operations
-  - $0.0004 per 10,000 read operations
-
-Estimated monthly cost for typical usage: <$5
-```
-
-### Cost Saving Tips
-
-1. Delete old match files periodically
-2. Set Cloud Storage object lifecycle policies
-3. Monitor usage with Cloud Monitoring
-
----
-
-## 🔄 Continuous Deployment
-
-### Automatic Deployment on Git Push
-
-```bash
-# Create Cloud Build trigger
-gcloud builds connect --region=us-central1
-
-# This connects your GitHub/GitLab repository to Cloud Build
-# On every push to main, Cloud Build will:
-# 1. Build the Docker image
-# 2. Push to Container Registry
-# 3. Deploy to Cloud Run
-```
-
-### Manual Deployment
-
-```bash
-# After making code changes
-git add .
-git commit -m "Update app functionality"
-git push origin main
-
-# Or manually trigger
-gcloud builds submit --config cloudbuild.yaml
-```
+### 5. **New Files**
+-   `.env.example`: Template for environment variables.
+-   `Dockerfile`: Container configuration for Cloud Run.
+-   `.dockerignore`: Files to exclude from the Docker image.
+-   `cloudbuild.yaml`: Cloud Build CI/CD configuration.
 
 ---
 
 ## 🆘 Troubleshooting
 
-### Service Won't Start
+### "Cannot connect to Cloud Storage" or "Permission denied"
+1.  Verify `USE_GCS=true` is set in your Cloud Run service\'s environment variables.
+2.  Verify `GOOGLE_CLOUD_PROJECT` is correct.
+3.  Ensure the service account (`pickleball-app@...`) has the `Storage Object Admin` role.
+4.  Verify the bucket names in the environment variables are correct.
 
-Check logs for errors:
-```bash
-gcloud run logs read pickleball-app --limit=100 --region=us-central1
-```
+### Service Won\'t Start
+-   Check the logs in the Cloud Run console for errors.
+-   Common issues include missing environment variables or incorrect service account permissions.
 
-Common issues:
-- Missing environment variables
-- Service account permissions
-- Cloud Storage bucket doesn't exist
-
-### Permission Denied on Cloud Storage
-
-```bash
-# Re-grant permissions to service account
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member=serviceAccount:pickleball-app@$PROJECT_ID.iam.gserviceaccount.com \
-  --role=roles/storage.objectAdmin
-```
-
-### Container Build Fails
-
-```bash
-# Check build logs
-gcloud builds log <BUILD_ID>
-
-# Rebuild with verbose output
-gcloud builds submit --config cloudbuild.yaml --no-cache
-```
-
-### Slow Response Times
-
-- Check Cloud Run metrics
-- Verify Cloud Storage bucket is in same region
-- Increase memory allocation
-- Check YAML file count (large number may slow rankings generation)
+### Static Files (Logo) Not Displaying
+-   Verify the `static` folder and its contents were uploaded to the `pickleball-config-data` bucket.
+-   Check the `GCS_CONFIG_BUCKET` environment variable is set correctly.
+-   Ensure the service account has permissions to read from the bucket.
 
 ---
 
-## 📈 Monitoring
+## 💰 Cost Optimization
 
-### Set Up Monitoring
-
-```bash
-# View Cloud Run metrics
-gcloud monitoring metrics-descriptors list --filter="resource.type:cloud_run_revision"
-
-# Create alert for high error rate
-gcloud alpha monitoring policies create \
-  --notification-channels=YOUR_CHANNEL_ID \
-  --display-name="Cloud Run Error Rate Alert"
-```
-
-### Key Metrics to Monitor
-
-1. **Request count** - Total API requests
-2. **Error rate** - Failed requests
-3. **Latency** - Response times
-4. **Concurrency** - Simultaneous requests
-5. **Cloud Storage operations** - Read/write success
+-   **Memory:** `512Mi` (suitable for this app)
+-   **CPU:** `1`
+-   **Min instances:** `0` (auto-scales to zero, saving costs when idle)
+-   **Estimated Cost:** Typically **< $5/month**, falling mostly within the free tier.
 
 ---
 
-## 🔄 Update and Rollback
+## 🔄 Continuous Deployment (CI/CD)
 
-### Deploy New Version
-
-```bash
-# After making code changes
-git add .
-git commit -m "Feature: Add new feature"
-git push origin main
-
-# Cloud Build will automatically deploy (if connected)
-# Or manually deploy:
-gcloud run deploy pickleball-app \
-  --source=. \
-  --region=us-central1
-```
-
-### Rollback to Previous Version
+For automatic deployments on `git push`:
 
 ```bash
-# View revision history
-gcloud run revisions list --region=us-central1
+# Connect Cloud Build to your repository
+gcloud builds connect --region=us-central1
 
-# Promote previous revision
-gcloud run services update-traffic pickleball-app \
-  --to-revisions=REVISION_ID=100 \
-  --region=us-central1
-```
-
-### Backup Cloud Storage Data
-
-```bash
-# Create backup bucket
-gsutil mb gs://pickleball-backup
-
-# Copy data
-gsutil -m cp -r gs://pickleball-matches-data/* gs://pickleball-backup/matches/
-gsutil -m cp -r gs://pickleball-config-data/* gs://pickleball-backup/config/
-
-# Verify backup
-gsutil ls gs://pickleball-backup/
+# On every push to your main branch, Cloud Build will now:
+# 1. Build the Docker image using the Dockerfile.
+# 2. Push the image to the Container Registry.
+# 3. Deploy the new revision to Cloud Run.
 ```
 
 ---
 
-## 🛑 Stopping and Cleanup
+## 🛑 Cleanup
 
-### Pause the Service
+To avoid ongoing charges, you can delete the created resources.
 
 ```bash
-# Set to 0 minimum instances (no cost when idle)
-gcloud run services update pickleball-app \
-  --min-instances=0 \
-  --region=us-central1
-
-# Or delete the service entirely
+# Delete the Cloud Run service
 gcloud run services delete pickleball-app --region=us-central1
-```
 
-### Delete Cloud Storage Buckets
-
-```bash
-# Delete buckets (WARNING: This is permanent!)
+# Delete the Cloud Storage buckets (WARNING: This is permanent!)
 gsutil -m rm -r gs://pickleball-matches-data
 gsutil -m rm -r gs://pickleball-config-data
 
-# Delete backup bucket
-gsutil -m rm -r gs://pickleball-backup
-```
-
-### Delete Cloud Project
-
-```bash
+# Delete the Cloud Project
 gcloud projects delete $PROJECT_ID
 ```
-
----
-
-## 🖼️ Static Files (Images, Logos, etc.)
-
-### Overview
-
-The application uses **GCS-based static file serving** in production. Static files (like the league logo) are stored in Google Cloud Storage and served directly from the `/static/` route.
-
-### Setup Static Files
-
-#### 1. Prepare Your Static Files
-
-Your static files should include the league logo. Example structure:
-```
-static/
-├── picktopia_logo.png        # League logo (or your custom logo)
-└── [other static files]
-```
-
-#### 2. Upload Static Files to GCS
-
-Upload static files to the `pickleball-config-data` bucket:
-
-```bash
-# Set your bucket name
-GCS_CONFIG_BUCKET="pickleball-config-data"
-
-# Upload all static files
-gsutil -m cp -r static/* gs://$GCS_CONFIG_BUCKET/static/
-
-# Verify upload
-gsutil ls gs://$GCS_CONFIG_BUCKET/static/
-```
-
-Or upload individual files:
-
-```bash
-# Upload just the logo
-gsutil cp static/picktopia_logo.png gs://$GCS_CONFIG_BUCKET/static/picktopia_logo.png
-
-# Verify
-gsutil cat gs://$GCS_CONFIG_BUCKET/static/picktopia_logo.png > /tmp/logo.png
-open /tmp/logo.png  # Verify it's correct
-```
-
-#### 3. How Static Files Are Served
-
-When `USE_GCS=true`:
-- Browser requests `/static/picktopia_logo.png`
-- Flask server fetches from `gs://pickleball-config-data/static/picktopia_logo.png`
-- File is returned with correct MIME type (image/png, etc.)
-
-When `USE_GCS=false` (local development):
-- Files are served from the local `static/` directory
-- No GCS access required
-
-#### 4. Update Logo in Your Pages
-
-The logo is referenced in:
-- `index.html` - Displays on rankings page
-- `match-form.html` - Displays on match recording form
-- Both use: `<img src="/static/picktopia_logo.png" alt="League Logo">`
-
-The `scripts/build_pages.py` automatically includes this image reference when generating `index.html`.
-
-#### 5. Supported Static File Types
-
-Any file type can be served (with automatic MIME type detection):
-- Images: `.png`, `.jpg`, `.gif`, `.svg`
-- Stylesheets: `.css`
-- Scripts: `.js`
-- Fonts: `.woff`, `.woff2`, `.ttf`
-- Documents: `.pdf`, `.txt`
-
-#### 6. Troubleshooting Static Files
-
-**Logo not displaying on rankings page?**
-
-```bash
-# Verify file exists in GCS
-gsutil ls gs://pickleball-config-data/static/picktopia_logo.png
-
-# Check permissions
-gsutil acl ch -u AllUsers:R gs://pickleball-config-data/static/picktopia_logo.png
-
-# Test direct download
-curl https://storage.googleapis.com/pickleball-config-data/static/picktopia_logo.png \
-  -o /tmp/test-logo.png
-
-# Verify index.html contains the img tag
-gsutil cat gs://pickleball-config-data/index.html | grep "picktopia_logo.png"
-```
-
-**Static files working locally but not on Cloud Run?**
-
-1. Verify files are uploaded to GCS
-2. Check `GCS_CONFIG_BUCKET` environment variable is set
-3. Verify service account has `storage.objects.get` permission
-4. Check Cloud Run logs: `gcloud run logs read pickleball-app`
-
----
-
-## 📚 Resources
-
-- [Cloud Run Documentation](https://cloud.google.com/run/docs)
-- [Cloud Storage Documentation](https://cloud.google.com/storage/docs)
-- [Cloud Build Documentation](https://cloud.google.com/build/docs)
-- [IAM Best Practices](https://cloud.google.com/iam/docs/best-practices)
-- [Cloud Run Pricing](https://cloud.google.com/run/pricing)
-
----
-
-## ✅ Deployment Checklist
-
-- [ ] Google Cloud project created
-- [ ] Billing enabled
-- [ ] Required APIs enabled
-- [ ] Cloud Storage buckets created
-- [ ] Service account created with permissions
-- [ ] Initial data uploaded to Cloud Storage
-- [ ] Static files uploaded to GCS (logo, images, etc.)
-- [ ] Application deployed to Cloud Run
-- [ ] Environment variables configured
-- [ ] Tested rankings page
-- [ ] Tested match form (with logo displaying)
-- [ ] Tested match submission
-- [ ] Verified data in Cloud Storage
-- [ ] Verified static files serving from GCS
-- [ ] Reviewed Cloud Run logs
-- [ ] Set up monitoring/alerts (optional)
-- [ ] Configured CI/CD with Cloud Build (optional)
-- [ ] Tested from multiple devices
-- [ ] Documented service URL for team
-
----
-
-## 🎯 Next Steps
-
-1. **Share Service URL** - Distribute to league members
-2. **Monitor Usage** - Check logs and metrics regularly
-3. **Optimize** - Adjust resource allocation based on usage
-4. **Enhance** - Consider adding features from roadmap
-5. **Scale** - Increase concurrency limits if needed
-
----
-
-## 📞 Support
-
-For issues with your Cloud Run deployment:
-
-1. Check Cloud Run logs: `gcloud run logs read pickleball-app`
-2. Review this guide's troubleshooting section
-3. Check [Cloud Run Documentation](https://cloud.google.com/run/docs)
-4. Use Google Cloud Console for visual debugging
-
-For issues with your application code:
-
-1. Check application error messages in logs
-2. Review code changes in git history
-3. Test locally: `USE_GCS=false python3 server.py`
-
----
-
-**Congratulations!** Your pickleball league app is now running on Google Cloud Run! 🎉

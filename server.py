@@ -63,7 +63,9 @@ if USE_GCS and GCS_AVAILABLE:
         USE_GCS = False
 
 # Initialize Flask app
-app = Flask(__name__, static_folder=str(BASE_DIR / 'static'))
+# Note: static_folder is NOT set because we serve static files from GCS via the /static/<path:path> route
+# This prevents Flask from trying to serve from a local /static directory that doesn't exist in Cloud Run
+app = Flask(__name__)
 
 # Helper functions for Cloud Storage operations
 def read_file_from_gcs(bucket_name, file_path):

@@ -1,7 +1,7 @@
 # Pickleball League - Project Memory & Implementation Guide
 
-**Last Updated:** October 22, 2025
-**Current Phase:** Phase 1.5 (Automated YAML-based with Web Server)
+**Last Updated:** October 27, 2025
+**Current Phase:** Phase 1.5 (Automated YAML-based with Web Server + Cloud Scheduler)
 **Status:** ✅ Fully Functional
 
 ---
@@ -31,12 +31,16 @@ A pickleball league management system that evolved from a simple YAML-based appr
 - ✅ Player dropdowns (populated from CSV)
 - ✅ Multi-game support (best of 3, blank games ignored)
 - ✅ Auto-calculate winner based on games won
-- ✅ Auto-save YAML files
-- ✅ Auto-regenerate rankings after each match
+- ✅ Auto-save YAML files to GCS or local filesystem
+- ✅ Scheduled ranking regeneration via Cloud Scheduler (prevents race conditions)
+- ✅ Manual ranking regeneration via `/api/regenerate-rankings` endpoint
+- ✅ File-based locking mechanism for concurrent instance safety
+- ✅ Smart timestamp detection (skips regeneration if no new matches)
 - ✅ Custom theme (Dark Blue #082946 & Orange #e0672b)
-- ✅ Logo placeholder for club branding
+- ✅ Logo file serving from GCS
 - ✅ Configurable league info via `config.json`
 - ✅ Backward compatible with old single-score YAML format
+- ✅ Comprehensive error logging and debug endpoints
 
 ---
 
@@ -44,26 +48,30 @@ A pickleball league management system that evolved from a simple YAML-based appr
 
 ```
 pickleball-league/
-├── server.py                    # Flask web server (port 8000)
-├── players.csv                  # Player registry (edit directly)
-├── config.json                  # League configuration
-├── match-form.html              # Match recording form
-├── index.html                   # Rankings display (auto-generated)
-├── rankings.json                # Rankings data (auto-generated)
-├── requirements.txt             # Phase 1 dependencies (pyyaml)
-├── requirements-server.txt      # Phase 1.5 dependencies (flask, pyyaml)
-├── update_rankings.sh           # Convenience script for manual updates
+├── server.py                           # Flask web server (port 8000)
+├── players.csv                         # Player registry (edit directly)
+├── config.json                         # League configuration
+├── match-form.html                     # Match recording form
+├── index.html                          # Rankings display (auto-generated)
+├── rankings.json                       # Rankings data (auto-generated)
+├── last_generation.timestamp           # Timestamp of last ranking generation
+├── rankings.lock                       # Lock file for concurrent safety
+├── requirements.txt                    # Phase 1 dependencies (pyyaml)
+├── requirements-server.txt             # Phase 1.5 dependencies (flask, pyyaml)
+├── update_rankings.sh                  # Convenience script for manual updates
+├── scheduled_ranking_update.sh         # Cloud Scheduler execution script
 ├── matches/
-│   ├── singles/                 # Singles match YAML files
-│   └── doubles/                 # Doubles match YAML files
+│   ├── singles/                        # Singles match YAML files
+│   └── doubles/                        # Doubles match YAML files
 ├── scripts/
-│   ├── generate_rankings.py    # Ranking calculator (multi-game support)
-│   ├── build_pages.py          # HTML generator (themed)
-│   └── import_to_database.py   # Migration script for Phase 2
-├── README.md                    # Original Phase 1 documentation
-├── README-SERVER.md             # Phase 1.5 complete documentation
-├── QUICKSTART.md               # 5-minute setup guide
-└── PROJECT_MEMORY.md           # This file
+│   ├── generate_rankings.py           # Ranking calculator with locking & timestamps
+│   ├── build_pages.py                 # HTML generator (themed)
+│   └── import_to_database.py          # Migration script for Phase 2
+├── README.md                           # Original Phase 1 documentation
+├── README-SERVER.md                    # Phase 1.5 complete documentation
+├── CLOUD-SCHEDULER-SETUP.md            # Cloud Scheduler setup guide
+├── QUICKSTART.md                       # 5-minute setup guide
+└── CLAUDE.md                           # This project memory file
 ```
 
 ---
@@ -147,6 +155,54 @@ Applied in:
 - **Auto-reload:** Server reads CSV on each `/api/players` request
 - **No restart needed** when adding/removing players
 
+### 7. Ranking Generation (Updated October 27, 2025)
+
+**Previous Behavior (before optimization):**
+- Match submitted → Rankings regenerated immediately → Page rebuilt
+- Simple but causes race conditions on multi-instance Cloud Run
+
+**Current Behavior (with Cloud Scheduler):**
+
+**Match Submission Flow:**
+1. User submits match via `/api/matches` endpoint
+2. Server saves match YAML file to GCS (or local filesystem)
+3. Returns immediately to user (no ranking update)
+4. User sees match recorded instantly ✅
+
+**Ranking Generation (Scheduled):**
+1. **Cloud Scheduler** triggers daily at configured time (default: 2 AM UTC)
+2. Calls POST `/api/regenerate-rankings` endpoint
+3. `generate_rankings.py` executes with:
+   - **Locking mechanism** - Acquires `rankings.lock` (prevents concurrent execution)
+   - **Timestamp check** - Compares newest match vs last generation time
+   - **Smart decision:**
+     - If new matches exist → Regenerate rankings
+     - If no new matches → Skip (efficient!)
+   - **Timestamp save** - Records when generation happened
+   - **Lock release** - Allows next job to run
+
+**Manual Regeneration (Optional):**
+Users can manually trigger ranking updates via:
+```bash
+curl -X POST https://your-cloud-run-url/api/regenerate-rankings
+```
+
+**Files Used:**
+- `scripts/generate_rankings.py` - Contains locking and timestamp logic
+- `scheduled_ranking_update.sh` - Shell script for Cloud Scheduler
+- `last_generation.timestamp` - Records when rankings were last generated
+- `rankings.lock` - Lock file for concurrent safety
+
+**Benefits:**
+- ✅ Eliminates race conditions (only one process at a time)
+- ✅ Efficient (skips regeneration if no new matches)
+- ✅ Scalable (works with multiple Cloud Run instances)
+- ✅ User-friendly (match submission is instant)
+- ✅ Logging (detailed error messages and debug endpoint at `/api/debug-gcs`)
+
+**Setup:**
+See `CLOUD-SCHEDULER-SETUP.md` for complete Cloud Scheduler configuration instructions.
+
 ---
 
 ## 🚀 How to Run
@@ -163,6 +219,7 @@ python3 server.py
 - Record Match: http://localhost:8000/record
 - API (players): http://localhost:8000/api/players
 - API (submit match): POST http://localhost:8000/api/matches
+- API (ranking regeneration): POST http://localhost:8000/api/regenerate-rankings
 
 ### From Other Devices
 1. Find your computer's IP: `ifconfig | grep "inet "`
@@ -192,10 +249,37 @@ Also update line 235 to match new port in the console message.
 4. Server is running
 
 ### Issue 4: Rankings Not Updating
-**Check:**
+**Check (with Cloud Scheduler):**
+1. Cloud Scheduler job is enabled and running
+2. Check Cloud Run logs for `/api/regenerate-rankings` requests
+3. Verify locking mechanism is working (no deadlocks)
+4. See `CLOUD-SCHEDULER-SETUP.md` for troubleshooting
+
+**Check (manual):**
 1. Console output for Python script errors
 2. `matches/` directory permissions
 3. PyYAML is installed: `pip3 install pyyaml`
+4. Lock file not stuck: `rm rankings.lock` if needed
+
+### Issue 5: Logo File Returns 404
+**Cause:** Flask's static_folder configuration interferes with GCS serving
+**Solution:** Already fixed - removed `static_folder` from Flask initialization
+**Test:** Visit `/api/debug-gcs` to verify GCS connectivity
+**If still failing:**
+1. Check Cloud Run logs for GCS errors
+2. Verify service account has Storage Object Viewer role
+3. Confirm file exists: `gsutil ls gs://pickleball-config-data/static/`
+
+### Issue 6: Lock File Stuck (Rankings Not Updating)
+**Cause:** Previous ranking generation crashed without releasing lock
+**Solution:**
+```bash
+# Remove stuck lock file (safe if no other process is running)
+rm rankings.lock
+
+# Or on GCS:
+gsutil rm gs://pickleball-config-data/rankings.lock
+```
 
 ---
 
@@ -247,34 +331,64 @@ Frank Chen
 
 ## 🔄 Workflow
 
-### Normal Operation
+### Normal Operation (Match Submission)
 1. User visits `/record`
 2. Selects match type (defaults to Doubles)
 3. Selects players from dropdowns
 4. Enters game scores (1-3 games)
 5. Clicks "Submit Match"
-6. **Backend automatically:**
+6. **Backend immediately:**
    - Validates data
-   - Creates YAML file
-   - Runs `generate_rankings.py`
-   - Runs `build_pages.py`
-   - Redirects to updated rankings
+   - Creates YAML file (saves to GCS or local filesystem)
+   - Returns success to user ✅
+   - **Does NOT regenerate rankings** (prevents race conditions)
+
+### Ranking Generation (Scheduled or Manual)
+
+**Automatic (Cloud Scheduler - Recommended):**
+1. Cloud Scheduler triggers at configured time (default: 2 AM UTC)
+2. Calls POST `/api/regenerate-rankings`
+3. `generate_rankings.py` runs with locking and smart timestamp detection
+4. Only regenerates if new matches exist (efficient!)
+5. Saves new rankings to GCS or local filesystem
+
+**Manual Trigger:**
+```bash
+# Trigger via curl
+curl -X POST https://your-cloud-run-url/api/regenerate-rankings
+
+# Or run locally
+python3 scripts/generate_rankings.py
+python3 scripts/build_pages.py
+```
 
 ### Manual Operations
 ```bash
 # Add players
 nano players.csv
 
-# Regenerate rankings manually
+# Regenerate rankings and pages manually
 python3 scripts/generate_rankings.py
 python3 scripts/build_pages.py
 
 # Or use convenience script
 ./update_rankings.sh
 
-# View logs
-# Check server console for errors
+# Debug GCS connectivity
+curl https://your-cloud-run-url/api/debug-gcs
+
+# View logs (local development)
+tail -f scheduled_update.log
 ```
+
+### Key Differences from Previous Version
+| Aspect | Before | Now |
+|--------|--------|-----|
+| **Match Submission** | Slow (waits for ranking update) | Fast (returns immediately) |
+| **Ranking Update** | Immediate (on every match) | Scheduled (once daily or manual) |
+| **Race Conditions** | Possible on multi-instance | Prevented by locking |
+| **Efficiency** | Regenerates every time | Skips if no new matches |
+| **User Experience** | Wait for response | Instant response |
 
 ---
 
@@ -585,11 +699,14 @@ ls -lt matches/doubles/ | head -5
 
 ### API Endpoints
 ```
-GET  /                      # Rankings page
-GET  /record                # Match form
-GET  /api/players           # Player list (JSON)
-POST /api/matches           # Submit match (JSON)
-GET  /rankings.json         # Rankings data
+GET  /                           # Rankings page
+GET  /record                     # Match form
+GET  /api/players                # Player list (JSON)
+POST /api/matches                # Submit match (JSON) - saves match only
+POST /api/regenerate-rankings    # Manually trigger ranking generation
+GET  /api/debug-gcs              # Debug GCS connectivity (testing only)
+GET  /rankings.json              # Rankings data
+GET  /static/<path:path>         # Serve static files from GCS
 ```
 
 ---
@@ -636,7 +753,20 @@ Before giving to league members:
 
 ## 📝 Change Log
 
-### October 22, 2025
+### October 27, 2025 - Race Condition Optimization
+- ✅ Implemented Cloud Scheduler integration for scheduled ranking generation
+- ✅ Added file-based locking mechanism (prevents concurrent execution)
+- ✅ Implemented timestamp detection (skips regeneration if no new matches)
+- ✅ Separated match submission from ranking generation
+- ✅ Created `/api/regenerate-rankings` POST endpoint for manual triggering
+- ✅ Created `/api/debug-gcs` endpoint for GCS connectivity troubleshooting
+- ✅ Enhanced error logging in GCS file operations
+- ✅ Fixed Flask static_folder configuration for GCS file serving
+- ✅ Created `scheduled_ranking_update.sh` for Cloud Scheduler
+- ✅ Created comprehensive `CLOUD-SCHEDULER-SETUP.md` guide
+- ✅ Updated project memory with new workflow documentation
+
+### October 22, 2025 - Initial Phase 1.5 Release
 - ✅ Implemented Phase 1.5 with Flask server
 - ✅ Added multi-game support (best of 3)
 - ✅ Implemented player dropdowns from CSV
@@ -647,22 +777,25 @@ Before giving to league members:
 - ✅ Changed server port to 8000
 - ✅ Created comprehensive documentation
 
-### Future Changes
-- Log any modifications here for reference
-
 ---
 
 ## 🎯 Success Metrics
 
 Current system successfully handles:
-- ✅ Automatic match recording
-- ✅ Real-time ranking updates
+- ✅ Automatic match recording (instant, no wait)
+- ✅ Scheduled ranking updates (daily via Cloud Scheduler)
+- ✅ Manual ranking regeneration (on-demand via API)
+- ✅ Concurrent instance safety (file-based locking)
+- ✅ Efficient processing (smart timestamp detection)
 - ✅ Multi-device access
 - ✅ Player management
-- ✅ Data persistence
-- ✅ Professional UI/UX
+- ✅ Data persistence (YAML + GCS)
+- ✅ Professional UI/UX with logo support
+- ✅ Comprehensive error logging and debugging
+- ✅ GCS integration with fallback to local filesystem
 
-**System is production-ready for local league use!**
+**System is production-ready for cloud deployment with multi-instance safety!**
+**Optimized for race condition prevention and efficient resource usage.**
 
 ---
 

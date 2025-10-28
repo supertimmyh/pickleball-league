@@ -67,6 +67,9 @@ pickleball-league/
 │   ├── generate_rankings.py           # Ranking calculator with locking & timestamps
 │   ├── build_pages.py                 # HTML generator (themed)
 │   └── import_to_database.py          # Migration script for Phase 2
+├── static/
+│   └── picktopia_logo.png             # Logo (served from container filesystem)
+├── Dockerfile                          # Container image definition (copies static/ files)
 ├── README.md                           # Original Phase 1 documentation
 ├── README-SERVER.md                    # Phase 1.5 complete documentation
 ├── CLOUD-SCHEDULER-SETUP.md            # Cloud Scheduler setup guide
@@ -261,14 +264,35 @@ Also update line 235 to match new port in the console message.
 3. PyYAML is installed: `pip3 install pyyaml`
 4. Lock file not stuck: `rm rankings.lock` if needed
 
-### Issue 5: Logo File Returns 404
-**Cause:** Flask's static_folder configuration interferes with GCS serving
-**Solution:** Already fixed - removed `static_folder` from Flask initialization
-**Test:** Visit `/api/debug-gcs` to verify GCS connectivity
-**If still failing:**
-1. Check Cloud Run logs for GCS errors
-2. Verify service account has Storage Object Viewer role
-3. Confirm file exists: `gsutil ls gs://pickleball-config-data/static/`
+### Issue 5: Static Files (Logo, etc.) Not Loading
+**Architecture:** Static files are served from the **local container filesystem** (not GCS)
+**How it works:**
+1. Static files are copied into the Docker image via `Dockerfile` (line 17: `COPY static/ static/`)
+2. Server serves files from the local `static/` directory
+3. Fallback to GCS available if `USE_GCS=true` and local file not found
+
+**Solution if files return 404:**
+1. Ensure file exists locally: `ls -la static/picktopia_logo.png`
+2. Verify `Dockerfile` includes `COPY static/ static/` (line 17)
+3. Ensure Docker image was rebuilt after adding files
+4. For Cloud Run: redeploy with `gcloud run deploy` to rebuild the container
+
+**Example - Adding a new static file:**
+```bash
+# 1. Add file to local static/ directory
+cp logo.png static/
+
+# 2. Commit to git
+git add static/
+git commit -m "Add logo to static files"
+
+# 3. Redeploy to Cloud Run
+gcloud run deploy pickleball-league-app --source .
+
+# 4. Access at /static/logo.png
+```
+
+**Debugging:** Check server console logs for "Serving static file from local filesystem:"
 
 ### Issue 6: Lock File Stuck (Rankings Not Updating)
 **Cause:** Previous ranking generation crashed without releasing lock
@@ -569,13 +593,52 @@ app.run(host='0.0.0.0', port=YOUR_PORT, debug=True)
 ```
 Also update line 235 console message.
 
-### Add Logo
-1. Save logo as `static/logo.png`
-2. Edit `match-form.html` line 296:
-   ```html
-   <img src="/static/logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%;">
+### Add or Update Static Files (Logo, Images, etc.)
+
+**How static files work:**
+- All files in the `static/` directory are served at `/static/filename`
+- Files are **included in the Docker image** via `Dockerfile` line 17
+- Changes require redeploying to Cloud Run
+
+**Steps to add/update a static file:**
+
+1. **Add the file locally:**
+   ```bash
+   # Example: add a new logo
+   cp your-logo.png static/picktopia_logo.png
    ```
-3. Edit `scripts/build_pages.py` logo placeholder section similarly
+
+2. **HTML files already reference the correct path:**
+   ```html
+   <!-- match-form.html and generated index.html -->
+   <img src="/static/picktopia_logo.png" alt="Logo">
+   ```
+   No HTML edits needed if you keep the same filename!
+
+3. **For a different filename, edit HTML references:**
+   - `match-form.html` (line ~315)
+   - `scripts/build_pages.py` (update the img src in the template)
+
+4. **Deploy to Cloud Run:**
+   ```bash
+   git add static/
+   git commit -m "Update logo"
+   gcloud run deploy pickleball-league-app --source .
+   ```
+
+**Local testing:**
+```bash
+# Start server
+python3 server.py
+
+# Test static file
+curl http://localhost:8000/static/picktopia_logo.png
+```
+
+**Verify in Cloud Run:**
+```bash
+curl https://pickleball-league-app-415494410673.us-central1.run.app/static/picktopia_logo.png
+```
 
 ---
 
@@ -706,7 +769,7 @@ POST /api/matches                # Submit match (JSON) - saves match only
 POST /api/regenerate-rankings    # Manually trigger ranking generation
 GET  /api/debug-gcs              # Debug GCS connectivity (testing only)
 GET  /rankings.json              # Rankings data
-GET  /static/<path:path>         # Serve static files from GCS
+GET  /static/<path:path>         # Serve static files (from container filesystem or GCS fallback)
 ```
 
 ---
@@ -752,6 +815,14 @@ Before giving to league members:
 ---
 
 ## 📝 Change Log
+
+### October 28, 2025 - Static File Serving Fix
+- ✅ Fixed logo and static file serving from container filesystem instead of GCS
+- ✅ Updated `Dockerfile` to include `COPY static/ static/` (line 17)
+- ✅ Modified `serve_static()` function to prioritize local filesystem with GCS fallback
+- ✅ Tested logo serving locally (HTTP 200 OK)
+- ✅ Updated CLAUDE.md documentation for static files
+- ✅ Created comprehensive static file handling guide
 
 ### October 27, 2025 - Race Condition Optimization
 - ✅ Implemented Cloud Scheduler integration for scheduled ranking generation

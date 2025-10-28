@@ -1,0 +1,51 @@
+From Cloud Run:
+{
+httpRequest: {
+cacheFillBytes: "0"
+cacheHit: false
+cacheLookup: false
+cacheValidatedWithOriginServer: false
+latency: "0.003202397s"
+protocol: "HTTP/1.1"
+referer: "https://pickleball-league-app-415494410673.us-central1.run.app/"
+remoteIp: "2605:8d80:60b0:14a:5864:2e1:126f:832"
+requestMethod: "GET"
+requestSize: "782"
+requestUrl: "https://pickleball-league-app-415494410673.us-central1.run.app/static/picktopia_logo.png"
+responseSize: "143"
+serverIp: "2600:1900:4240:200::"
+status: 404
+userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/141.0.7390.96 Mobile/15E148 Safari/604.1"
+}
+insertId: "68ffe61a00025e63318a82a5"
+labels: {
+commit-sha: "8b506e5e3c9409d925dfc42f132f78e8f6d560e4"
+gcb-build-id: "37df3552-dada-423f-b023-931af8ea97de"
+gcb-trigger-id: "f75f0e99-fbde-4324-9c53-f7e0317ea799"
+gcb-trigger-region: "global"
+instanceId: "0014778296b2b179841da29a546afd8303ba0a00f1c0be3d26fda17d3b335fb2d7bfdcf14e3df3cb839aec6d77351e6212b960bb50e05424ab711de0b43a4fa4ed641ba9f461d535e9443c110674"
+managed-by: "gcp-cloud-build-deploy-cloud-run"
+}
+logName: "projects/pickleball-league-476403/logs/run.googleapis.com%2Frequests"
+payload: "payloadNotSet"
+receiveLocation: "us-central1"
+receiveTimestamp: "2025-10-27T21:37:30.379893290Z"
+resource: {
+labels: {
+configuration_name: "pickleball-league-app"
+location: "us-central1"
+project_id: "pickleball-league-476403"
+revision_name: "pickleball-league-app-00006-zcw"
+service_name: "pickleball-league-app"
+}
+type: "cloud_run_revision"
+}
+severity: "WARNING"
+spanId: "947427fee42ea66a"
+timestamp: "2025-10-27T21:37:30.150446Z"
+trace: "projects/pickleball-league-476403/traces/f87a34a2fb1b968f9739b57f8896625c"
+traceSampled: false
+}
+
+From api/gcs_debug:
+{"gcs_config_bucket":"pickleball-config-data","gcs_matches_bucket":"pickleball-matches-data","storage_client_initialized":true,"tests":{"list_static_files":{"file_count":1,"files":["static/picktopia_logo.png"],"status":"OK"},"read_logo":{"file_size_bytes":142937,"status":"OK"},"storage_client":"OK: storage_client initialized"},"use_gcs":true}

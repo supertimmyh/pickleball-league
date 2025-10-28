@@ -272,27 +272,33 @@ def submit_match():
 
 @app.route('/static/<path:path>')
 def serve_static(path):
-    """Serve static files from local filesystem or GCS."""
+    """Serve static files from local filesystem (container) by default."""
+    # Always try local filesystem first (files included in Docker image)
+    static_dir = BASE_DIR / "static"
+    file_path = static_dir / path
+
+    # Check if file exists locally
+    if file_path.exists() and file_path.is_file():
+        print(f"✓ Serving static file from local filesystem: {file_path}")
+        return send_from_directory(static_dir, path)
+
+    # Fallback to GCS if enabled and file not found locally
     if USE_GCS:
-        # Serve from GCS
         gcs_path = f'static/{path}'
-        print(f"Serving static file from GCS: gs://{GCS_CONFIG_BUCKET}/{gcs_path}")
+        print(f"Local file not found, trying GCS: gs://{GCS_CONFIG_BUCKET}/{gcs_path}")
         file_data = read_file_from_gcs(GCS_CONFIG_BUCKET, gcs_path)
-        if file_data is None:
-            print(f"ERROR: Static file not found - gs://{GCS_CONFIG_BUCKET}/{gcs_path}")
-            return jsonify({"error": "Static file not found"}), 404
+        if file_data is not None:
+            # Determine content type based on file extension
+            import mimetypes
+            content_type, _ = mimetypes.guess_type(path)
+            if content_type is None:
+                content_type = 'application/octet-stream'
+            print(f"✓ Returning static file from GCS with content-type: {content_type}")
+            return file_data, 200, {'Content-Type': content_type}
 
-        # Determine content type based on file extension
-        import mimetypes
-        content_type, _ = mimetypes.guess_type(path)
-        if content_type is None:
-            content_type = 'application/octet-stream'
-
-        print(f"✓ Returning static file with content-type: {content_type}")
-        return file_data, 200, {'Content-Type': content_type}
-    else:
-        # Serve from local filesystem
-        return send_from_directory(app.static_folder, path)
+    # File not found anywhere
+    print(f"ERROR: Static file not found - {path}")
+    return jsonify({"error": "Static file not found"}), 404
 
 
 @app.route('/api/debug-gcs', methods=['GET'])

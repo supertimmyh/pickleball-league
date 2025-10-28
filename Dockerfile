@@ -14,6 +14,7 @@ COPY server.py .
 COPY scripts/ scripts/
 COPY match-form.html .
 COPY config.json .
+COPY static/ static/
 
 # Create non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app

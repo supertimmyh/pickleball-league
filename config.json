@@ -1,6 +1,6 @@
 {
-  "league_name": "Pickleball League",
-  "league_description": "Competitive Pickleball League",
+  "league_name": "Launchpad Ladder League",
+  "league_description": "The first step on the competitive ladder.",
   "ranking_methods": [
     "ELO Rating System",
     "Points Difference",

@@ -202,7 +202,7 @@ python3 scripts/generate_rankings.py
 python3 scripts/generate_rankings.py
 
 # Manually trigger regeneration endpoint
-curl -X POST http://localhost:8000/api/regenerate-rankings
+curl -X POST http://localhost:8000/enerate-rankings
 
 # View logs
 tail -f scheduled_update.log

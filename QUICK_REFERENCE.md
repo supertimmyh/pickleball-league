@@ -139,6 +139,9 @@ curl -X POST http://localhost:8000/api/matches \
     "games": [{"player1_score": 11, "player2_score": 9}],
     "winner": "Player1"
   }'
+
+  # Regenerate Rankings
+  curl -X POST http://localhost:8000/api/regenerate-rankings
 ```
 
 ---
